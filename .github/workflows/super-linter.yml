@@ -26,4 +26,5 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
+          GITHUB_ACITONS_LINTER_COMMAND_OPTIONS: "--skip-string-normalization"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
