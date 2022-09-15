@@ -39,17 +39,21 @@ class Keyword_Article(models.Model):
 
 
 class CategoryNode(models.Model):
-    children = models.ForeignKey('CategoryNode',on_delete=models.CASCADE,related_name='Ребенок',blank=True,null=True)
+    children = models.ManyToManyField('CategoryNode',related_name='child',blank=True,null=True,)
     name = models.CharField(max_length=255)
-    parent = models.ForeignKey('CategoryNode',on_delete=models.CASCADE,related_name='Родитель',blank=True,null=True)
-    articles = models.ForeignKey('Article',on_delete=models.CASCADE,related_name='Статьи',blank=True,null=True)
+    parent = models.ForeignKey('CategoryNode',on_delete=models.CASCADE,related_name='parent_rel',blank=True,null=True)
+    articles = models.ForeignKey('Article',on_delete=models.CASCADE,related_name='art',blank=True,null=True)
     valid = models.BooleanField()
+
+    def admin_names(self):
+        return ', '.join([a.name for a in self.children.all()])
+
+    admin_names.short_description = "children"
 
 
     def __str__(self):
-        return self.name
+        return f"{self.id}"
 
     class Meta:
         verbose_name = 'Узел'
         verbose_name_plural = 'Узел'
-

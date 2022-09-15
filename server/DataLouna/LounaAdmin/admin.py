@@ -21,7 +21,7 @@ class KeywordsAdmin(admin.ModelAdmin):
     list_display = ('id','text')
 
 class CategoryNodeAdmin(admin.ModelAdmin):
-    list_display = ('id','name','children','parent','articles','valid')
+    list_display = ('id','name','admin_names','parent','articles','valid')
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
     list_display = ('id','keywords_id','article_id',)
