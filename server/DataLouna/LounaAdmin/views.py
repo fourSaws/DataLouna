@@ -24,25 +24,28 @@ def getArticles(request):
 
 
 
-class getChildren(viewsets.ReadOnlyModelViewSet):
-        def get_queryset(self):
+class getChildren(viewsets.ViewSet):
+        def list(self,request):
             parent_id = self.request.query_params.get('parent_id')
-            queryset = CategoryNode.objects.filter(parent_id=parent_id).values()[0]
-            return queryset
-        serializer_class = NodeSerializer
+            queryset = CategoryNode.objects.filter(parent_id=parent_id)
+            try:
+                queryset[0]
+            except IndexError:
+                return Response({'getChildren_Error':'ID not found'},status=status.HTTP_400_BAD_REQUEST)
+            serializer = NodeSerializer(queryset,many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-class getNode(viewsets.ReadOnlyModelViewSet):
-    def get_queryset(self):
+class getNode(viewsets.ViewSet):
+    def list(self, request):
         id = self.request.query_params.get('id')
         queryset = CategoryNode.objects.filter(id=id)
-        return queryset
-    serializer_class = NodeSerializer
-
-    def permission_denied(self, request, message=None, code=None):
-        if request.authenticators and not request.successful_authenticator:
-            raise  exceptions.NotAuthenticated()
-        raise exceptions.NotAcceptable(detail=message)
+        try:
+            queryset[0]
+        except IndexError:
+            return Response({'getNode_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = NodeSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
