@@ -1,8 +1,10 @@
 from django.shortcuts import redirect
-from rest_framework import status, viewsets
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Article, CategoryNode, Keywords, Keyword_Article
 from .serializer import NodeSerializer
 
@@ -11,21 +13,34 @@ def RedirectToAdmin(request):
     return redirect('/admin/')
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def getArticles(request):
-    param_id = request.query_params['id']
-    try:
-        instance = Article.objects.filter(id=param_id).values()[0]
-        return Response(instance)
-    except IndexError:
-        return Response(
-            {'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
-        )
+class getArticle(APIView):
+    id_param_config = openapi.Parameter(
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
+
+    @swagger_auto_schema(manual_parameters=[id_param_config])
+    def get(self, request):
+        param_id = self.request.query_params.get('id')
+        try:
+            instance = Article.objects.filter(id=param_id).values()[0]
+            return Response(instance)
+        except IndexError:
+            return Response(
+                {'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
-class getChildren(viewsets.ViewSet):
-    def list(self, request):
+class getChildren(APIView):
+    serializer_class = NodeSerializer
+    parent_param_config = openapi.Parameter(
+        'parent_id',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING,
+    )
+
+    @swagger_auto_schema(manual_parameters=[parent_param_config])
+    def get(self, request):
         parent_id = self.request.query_params.get('parent_id')
         queryset = CategoryNode.objects.filter(parent_id=parent_id)
         try:
@@ -39,8 +54,14 @@ class getChildren(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class getNode(viewsets.ViewSet):
-    def list(self, request):
+class getNode(APIView):
+    serializer_class = NodeSerializer
+    id_param_config = openapi.Parameter(
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
+
+    @swagger_auto_schema(manual_parameters=[id_param_config])
+    def get(self, request):
         id = self.request.query_params.get('id')
         queryset = CategoryNode.objects.filter(id=id)
         try:
@@ -53,8 +74,17 @@ class getNode(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class getArticlesByKeyWords(viewsets.ViewSet):
-    def list(self, request):
+class getArticlesByKeyWords(APIView):
+    serializer_class = NodeSerializer
+    word_param_config = openapi.Parameter(
+        'word',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING,
+    )
+
+    @swagger_auto_schema(manual_parameters=[word_param_config])
+    def get(self, request):
         word = self.request.query_params.get('word')
         id_by_word = Keywords.objects.filter(text=word).values('id')[0]
         print(f"{id_by_word=}")
