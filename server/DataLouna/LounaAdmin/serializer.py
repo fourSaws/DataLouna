@@ -9,7 +9,7 @@ class NodeSerializerUnpack(serializers.ModelSerializer):
 
 
 class NodeSerializer(serializers.ModelSerializer):
-    #children = NodeSerializerUnpack(read_only=True,many=True)
+    # children = NodeSerializerUnpack(read_only=True,many=True)
     class Meta:
         model = CategoryNode
         fields = ('id', 'name', 'parent', 'articles')
