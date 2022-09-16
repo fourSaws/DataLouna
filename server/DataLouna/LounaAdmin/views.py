@@ -19,7 +19,9 @@ def getArticles(request):
         instance = Article.objects.filter(id=param_id).values()[0]
         return Response(instance)
     except IndexError:
-        return Response({'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class getChildren(viewsets.ViewSet):
@@ -29,7 +31,10 @@ class getChildren(viewsets.ViewSet):
         try:
             queryset[0]
         except IndexError:
-            return Response({'getChildren_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getChildren_Error': 'ID not found'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = NodeSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -41,7 +46,9 @@ class getNode(viewsets.ViewSet):
         try:
             queryset[0]
         except IndexError:
-            return Response({'getNode_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getNode_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = NodeSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -51,7 +58,9 @@ class getArticlesByKeyWords(viewsets.ViewSet):
         word = self.request.query_params.get('word')
         id_by_word = Keywords.objects.filter(text=word).values('id')[0]
         print(f"{id_by_word=}")
-        keyword_A = Keyword_Article.objects.filter(keywords_id=id_by_word['id']).values('article_id')
+        keyword_A = Keyword_Article.objects.filter(keywords_id=id_by_word['id']).values(
+            'article_id'
+        )
         print(f"{keyword_A=}")
         print(len(keyword_A))
         article_array = []
