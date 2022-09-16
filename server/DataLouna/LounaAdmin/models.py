@@ -59,4 +59,4 @@ class CategoryNode(models.Model):
 
     class Meta:
         verbose_name = 'Узел'
-        verbose_name_plural = 'Узелы'
+        verbose_name_plural = 'Узлы'
