@@ -7,8 +7,8 @@ from .views import RedirectToAdmin,getArticle,getChildren,getNode,getArticlesByK
 app_name = 'LounaAdmin'
 urlpatterns = [
     path('',RedirectToAdmin),
-    path('api/getArticl',getArticle.as_view()),
+    path('api/getArticle',getArticle.as_view()),
     path('api/getChildren',getChildren.as_view()),
     path('api/getNode',getNode.as_view()),
     path('api/getArticlesByKeyWords',getArticlesByKeyWords.as_view())
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
