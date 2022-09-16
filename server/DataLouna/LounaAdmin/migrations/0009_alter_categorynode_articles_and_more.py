@@ -14,16 +14,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='categorynode',
             name='articles',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='Статьи', to='LounaAdmin.article'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='Статьи', to='LounaAdmin.article'),
         ),
         migrations.AlterField(
             model_name='categorynode',
             name='children',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='Ребенок', to='LounaAdmin.categorynode'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='Ребенок', to='LounaAdmin.categorynode'),
         ),
         migrations.AlterField(
             model_name='categorynode',
             name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='Родитель', to='LounaAdmin.categorynode'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='Родитель', to='LounaAdmin.categorynode'),
         ),
     ]

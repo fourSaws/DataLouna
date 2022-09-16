@@ -5,11 +5,11 @@ from .models import *
 class NodeSerializerUnpack(serializers.ModelSerializer):
     class Meta:
         model = CategoryNode
-        fields = ('id','name')
+        fields = ('id', 'name')
 
 
 class NodeSerializer(serializers.ModelSerializer):
     #children = NodeSerializerUnpack(read_only=True,many=True)
     class Meta:
         model = CategoryNode
-        fields = ('id','name','parent','articles')
+        fields = ('id', 'name', 'parent', 'articles')
