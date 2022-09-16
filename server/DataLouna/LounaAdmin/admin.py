@@ -22,6 +22,7 @@ class KeywordsAdmin(admin.ModelAdmin):
 
 class CategoryNodeAdmin(admin.ModelAdmin):
     list_display = ('id','name','admin_names','parent','articles','valid')
+    filter_horizontal = ['children']
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
     list_display = ('id','keywords_id','article_id',)
