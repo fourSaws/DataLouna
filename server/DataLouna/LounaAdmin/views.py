@@ -17,21 +17,29 @@ def RedirectToAdmin(request):
 
 class getArticle(APIView):
     id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
 
     @swagger_auto_schema(manual_parameters=[id_param_config])
-    def get(self,request):
+    def get(self, request):
         param_id = self.request.query_params.get('id')
         try:
             instance = Article.objects.filter(id=param_id).values()[0]
             return Response(instance)
         except IndexError:
-            return Response({'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getArticle_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
+            )
+
 
 class getChildren(APIView):
     serializer_class = NodeSerializer
     parent_param_config = openapi.Parameter(
-        'parent_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'parent_id',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING,
+    )
 
     @swagger_auto_schema(manual_parameters=[parent_param_config])
     def get(self, request):
@@ -51,7 +59,9 @@ class getChildren(APIView):
 class getNode(APIView):
     serializer_class = NodeSerializer
     id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
+
     @swagger_auto_schema(manual_parameters=[id_param_config])
     def get(self, request):
         id = self.request.query_params.get('id')
@@ -69,7 +79,12 @@ class getNode(APIView):
 class getArticlesByKeyWords(APIView):
     serializer_class = NodeSerializer
     word_param_config = openapi.Parameter(
-        'word', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'word',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING,
+    )
+
     @swagger_auto_schema(manual_parameters=[word_param_config])
     def get(self, request):
         word = self.request.query_params.get('word')
