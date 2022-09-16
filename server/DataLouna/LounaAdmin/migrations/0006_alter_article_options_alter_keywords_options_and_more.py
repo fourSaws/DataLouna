@@ -13,19 +13,19 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='article',
-            options={'verbose_name': 'Статьи',
-                     'verbose_name_plural': 'Статьи'},
+            options={'verbose_name': 'Статьи', 'verbose_name_plural': 'Статьи'},
         ),
         migrations.AlterModelOptions(
             name='keywords',
-            options={'verbose_name': 'Ключевые слова',
-                     'verbose_name_plural': 'Ключевые слова'},
+            options={
+                'verbose_name': 'Ключевые слова',
+                'verbose_name_plural': 'Ключевые слова',
+            },
         ),
         migrations.AlterField(
             model_name='article',
             name='photo',
-            field=models.ImageField(
-                blank=True, upload_to='', verbose_name='Фото'),
+            field=models.ImageField(blank=True, upload_to='', verbose_name='Фото'),
         ),
         migrations.AlterField(
             model_name='article',
@@ -35,28 +35,51 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='article',
             name='title',
-            field=models.CharField(
-                max_length=255, verbose_name='Короткое описание'),
+            field=models.CharField(max_length=255, verbose_name='Короткое описание'),
         ),
         migrations.AlterField(
             model_name='keywords',
             name='text',
-            field=models.CharField(
-                max_length=64, verbose_name='Ключевые слова'),
+            field=models.CharField(max_length=64, verbose_name='Ключевые слова'),
         ),
         migrations.CreateModel(
             name='CategoryNode',
             fields=[
-                ('id', models.BigAutoField(auto_created=True,
-                 primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=255)),
                 ('valid', models.BooleanField()),
-                ('articles', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='Статьи', to='LounaAdmin.article')),
-                ('children', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='Ребенок', to='LounaAdmin.categorynode')),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='Родитель', to='LounaAdmin.categorynode')),
+                (
+                    'articles',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='Статьи',
+                        to='LounaAdmin.article',
+                    ),
+                ),
+                (
+                    'children',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='Ребенок',
+                        to='LounaAdmin.categorynode',
+                    ),
+                ),
+                (
+                    'parent',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='Родитель',
+                        to='LounaAdmin.categorynode',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Узел',
