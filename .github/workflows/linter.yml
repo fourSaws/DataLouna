@@ -26,3 +26,4 @@ jobs:
           # Enable linters
           black: true
           flake8: true
+          black_args: "--skip-string-normalization"
