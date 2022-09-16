@@ -2,9 +2,9 @@ from django.db import models
 
 
 class Article(models.Model):
-    title = models.CharField(max_length=255, verbose_name='Короткое описание')
+    title = models.CharField(max_length=255,verbose_name='Короткое описание')
     text = models.TextField(verbose_name='Текст статьи')
-    photo = models.ImageField(blank=True, verbose_name='Фото')
+    photo = models.ImageField(blank=True,verbose_name='Фото')
 
     def __str__(self):
         return f"{self.id}"
