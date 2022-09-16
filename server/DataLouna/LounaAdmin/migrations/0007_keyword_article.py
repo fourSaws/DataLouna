@@ -14,12 +14,31 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Keyword_Article',
             fields=[
-                ('id', models.BigAutoField(auto_created=True,
-                 primary_key=True, serialize=False, verbose_name='ID')),
-                ('article_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 to='LounaAdmin.article', verbose_name='ID Статьи')),
-                ('keywords_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 to='LounaAdmin.keywords', verbose_name='ID Ключевого слова')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'article_id',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='LounaAdmin.article',
+                        verbose_name='ID Статьи',
+                    ),
+                ),
+                (
+                    'keywords_id',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='LounaAdmin.keywords',
+                        verbose_name='ID Ключевого слова',
+                    ),
+                ),
             ],
         ),
     ]

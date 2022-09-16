@@ -27,7 +27,11 @@ class CategoryNodeAdmin(admin.ModelAdmin):
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'keywords_id', 'article_id',)
+    list_display = (
+        'id',
+        'keywords_id',
+        'article_id',
+    )
 
 
 admin.site.register(Article, ArticleAdmin)
