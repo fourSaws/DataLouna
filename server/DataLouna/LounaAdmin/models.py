@@ -10,7 +10,7 @@ class Article(models.Model):
         return f"{self.id}"
 
     class Meta:
-        verbose_name = 'Статьи'
+        verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
 
 
@@ -56,4 +56,4 @@ class CategoryNode(models.Model):
 
     class Meta:
         verbose_name = 'Узел'
-        verbose_name_plural = 'Узел'
+        verbose_name_plural = 'Узелы'
