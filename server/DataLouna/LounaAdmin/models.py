@@ -1,7 +1,9 @@
 from django.db import models
+from django.dispatch import receiver
 
 
 class Article(models.Model):
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name='Короткое описание')
     text = models.TextField(verbose_name='Текст статьи')
     photo = models.ImageField(blank=True, verbose_name='Фото')
@@ -45,7 +47,7 @@ class Keyword_Article(models.Model):
 
 
 class CategoryNode(models.Model):
-    children = models.ManyToManyField('CategoryNode', related_name='child', blank=True)
+    children = models.ManyToManyField('CategoryNode', default=None, null=True, related_name='child', blank=True)
     name = models.CharField(max_length=255)
     parent = models.ForeignKey(
         'CategoryNode',
@@ -54,18 +56,28 @@ class CategoryNode(models.Model):
         blank=True,
         null=True,
     )
-    articles = models.ForeignKey(
-        'Article', on_delete=models.CASCADE, related_name='art', blank=True, null=True
+    articles = models.ManyToManyField(
+        'Article', related_name='art', blank=True,
     )
     valid = models.BooleanField()
+    final = models.BooleanField(default=False)
 
-    def admin_names(self):
+    def children_names(self):
         return ', '.join([a.name for a in self.children.all()])
 
-    admin_names.short_description = "children"
+    children_names.short_description = "children"
+
+    def articles_names(self):
+        return ', '.join([a.title for a in self.articles.all()])
+
+    articles_names.short_description = "articles"
+
+    def get_id(self):
+        return self.articles.values('id')
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.name}"
+
 
     class Meta:
         verbose_name = 'Узел'
