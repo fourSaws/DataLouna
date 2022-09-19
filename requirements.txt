@@ -3,3 +3,5 @@ djangorestframework==3.13.1
 Pillow
 django-jet-reboot
 django-cleanup
+drf-yasg==1.21.3
+pytelegrambotapi==4.7.0
