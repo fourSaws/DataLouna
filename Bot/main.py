@@ -1,6 +1,11 @@
-
 from telebot import *
-from telebot.types import Message, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from telebot.types import (
+    Message,
+    ReplyKeyboardMarkup,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    CallbackQuery,
+)
 from mytoken import token
 from api import *
 
@@ -41,11 +46,19 @@ def send_category(message: types.Message):
             bot.send_message(message.from_user.id, "Error!!!")
             return
         markup.add(
-            InlineKeyboardButton(text=i.name,
-                                 callback_data="c\0" + str(int(i.final)) +  # type and final
-                                               "\0" + str(i.id) +  # id
-                                               "\0" + str(i.parentId)))  # parentId
-    bot.send_message(message.from_user.id, root.name + "\n\nКатегории", reply_markup=markup)
+            InlineKeyboardButton(
+                text=i.name,
+                callback_data="c\0"
+                + str(int(i.final))
+                + "\0"  # type and final
+                + str(i.id)
+                + "\0"  # id
+                + str(i.parentId),
+            )
+        )  # parentId
+    bot.send_message(
+        message.from_user.id, root.name + "\n\nКатегории", reply_markup=markup
+    )
 
 
 '''
@@ -86,18 +99,26 @@ def categoryCallback(call: CallbackQuery):
                 bot.send_message(call.from_user.id, "Error!!!")
                 return
             markup.add(
-                InlineKeyboardButton(text=article.title,
-                                     callback_data="a\0" + str(article.id) +  # id
-                                                   "\0" + cbdata[2]))  # parentId
+                InlineKeyboardButton(
+                    text=article.title,
+                    callback_data="a\0" + str(article.id) + "\0" + cbdata[2],  # id
+                )
+            )  # parentId
         node = getNode(int(cbdata[2]))
         parentId = node.parentId
         messageText = node.name
         node = getNode(parentId)
         markup.add(
-            InlineKeyboardButton(text="Назад",
-                                 callback_data="c\0" + str(int(node.final)) +  # type and final
-                                               "\0" + str(node.id) +  # id
-                                               "\0" + str(node.parentId)))  # parentId
+            InlineKeyboardButton(
+                text="Назад",
+                callback_data="c\0"
+                + str(int(node.final))
+                + "\0"  # type and final
+                + str(node.id)
+                + "\0"  # id
+                + str(node.parentId),
+            )
+        )  # parentId
         while True:
             if parentId is None:
                 break
@@ -105,8 +126,12 @@ def categoryCallback(call: CallbackQuery):
             parentId = node.parentId
             messageText = f'{node.name} → {messageText}'
         messageText = messageText + "\n\nСтатьи:"
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                              text=messageText, reply_markup=markup)
+        bot.edit_message_text(
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            text=messageText,
+            reply_markup=markup,
+        )
     else:
         categories = getChildren(int(cbdata[2]))
         if categories is None:
@@ -119,19 +144,31 @@ def categoryCallback(call: CallbackQuery):
                 bot.send_message(call.from_user.id, "Error!!!")
                 return
             markup.add(
-                InlineKeyboardButton(text=category.name,
-                                     callback_data="c\0" + str(int(category.final)) +  # type and final
-                                                   "\0" + str(category.id) +  # id
-                                                   "\0" + str(category.parentId)))  # parentId
+                InlineKeyboardButton(
+                    text=category.name,
+                    callback_data="c\0"
+                    + str(int(category.final))
+                    + "\0"  # type and final
+                    + str(category.id)
+                    + "\0"  # id
+                    + str(category.parentId),
+                )
+            )  # parentId
         node = getNode(int(cbdata[2]))
         parentId = node.parentId
         messageText = node.name
         if parentId != None:
             markup.add(
-                InlineKeyboardButton(text="Назад",
-                                     callback_data="c\0" + str(int(node.final)) +  # type and final
-                                                   "\0" + str(node.id) +  # id
-                                                   "\0" + str(node.parentId)))  # parentId
+                InlineKeyboardButton(
+                    text="Назад",
+                    callback_data="c\0"
+                    + str(int(node.final))
+                    + "\0"  # type and final
+                    + str(node.id)
+                    + "\0"  # id
+                    + str(node.parentId),
+                )
+            )  # parentId
         while True:
             if parentId is None:
                 break
@@ -139,8 +176,12 @@ def categoryCallback(call: CallbackQuery):
             parentId = node.parentId
             messageText = f'{node.name} → {messageText}'
 
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                              text=messageText + "\n\nКатегории:", reply_markup=markup)
+        bot.edit_message_text(
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            text=messageText + "\n\nКатегории:",
+            reply_markup=markup,
+        )
 
 
 @bot.callback_query_handler(func=lambda call: call.data.split('\0')[0] == 'a')
@@ -161,16 +202,35 @@ def articleCallback(call: CallbackQuery):
         print("__ ", call.message.chat.id)
         bot.send_message(call.from_user.id, "Error!!!")
         return
-    markup.add(InlineKeyboardButton(text="Назад",
-                                     callback_data="c\0" + str(int(node.final)) +  # type and final
-                                                   "\0" + str(node.id) +  # id
-                                                   "\0" + str(node.parentId)))  # parentId))
+    markup.add(
+        InlineKeyboardButton(
+            text="Назад",
+            callback_data="c\0"
+            + str(int(node.final))
+            + "\0"  # type and final
+            + str(node.id)
+            + "\0"  # id
+            + str(node.parentId),
+        )
+    )  # parentId))
     messageText = f'*{article.title}*\n\n{article.text}'
     img = getPhoto(article.photoPath)
     if img:
-        bot.send_photo(call.message.chat.id, img, caption=messageText, reply_markup=markup, parse_mode="Markdown")
+        bot.send_photo(
+            call.message.chat.id,
+            img,
+            caption=messageText,
+            reply_markup=markup,
+            parse_mode="Markdown",
+        )
     else:
-        bot.send_message(call.message.chat.id,  messageText, reply_markup=markup, parse_mode="Markdown")
+        bot.send_message(
+            call.message.chat.id,
+            messageText,
+            reply_markup=markup,
+            parse_mode="Markdown",
+        )
+
 
 '''
 ________________________________________________________________________________________________________________________
@@ -179,4 +239,3 @@ ________________________________________________________________________________
 '''
 
 bot.infinity_polling()
-

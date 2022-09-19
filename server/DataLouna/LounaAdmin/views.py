@@ -61,7 +61,6 @@ class getChildren(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class getNode(APIView):
     serializer_class = NodeSerializer
     id_param_config = openapi.Parameter(
