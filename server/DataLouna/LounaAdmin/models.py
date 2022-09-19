@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
 
@@ -47,7 +48,7 @@ class Keyword_Article(models.Model):
 
 
 class CategoryNode(models.Model):
-    children = models.ManyToManyField('CategoryNode', default=None, null=True, related_name='child', blank=True)
+    children = models.ManyToManyField('CategoryNode',default=None, null=True, related_name='child', blank=True)
     name = models.CharField(max_length=255)
     parent = models.ForeignKey(
         'CategoryNode',
@@ -82,3 +83,5 @@ class CategoryNode(models.Model):
     class Meta:
         verbose_name = 'Узел'
         verbose_name_plural = 'Узлы'
+
+
