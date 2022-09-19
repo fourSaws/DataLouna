@@ -20,7 +20,7 @@ def send_hi(message: Message):
     bot.send_message(message.chat.id, "Привет ✌️ ")
 
 
-@bot.message_handler(commands=['FAQ'])
+@bot.message_handler(commands=['faq'])
 def send_category(message: types.Message):
     markup = InlineKeyboardMarkup()
     root = getChildren()[0]
