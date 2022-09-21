@@ -32,7 +32,7 @@ class Keyword_Article(models.Model):
         default=None,
         on_delete=models.SET_DEFAULT,
         verbose_name='ID Ключевого слова',
-        null=True
+        null=True #TODO: Delete this on the prod
     )
     article_id = models.ForeignKey(
         'Article', default=None, on_delete=models.SET_DEFAULT, verbose_name='ID Статьи', null=True
