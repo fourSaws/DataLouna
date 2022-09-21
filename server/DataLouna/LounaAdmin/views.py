@@ -42,25 +42,22 @@ class getChildren(APIView):
     def get(self, request):
         final_array = []
         parent_id = self.request.query_params.get('parent_id')
-        if parent_id:
-            queryset = CategoryNode.objects.filter(parent_id=parent_id)
-            try:
-                queryset[0]
-            except IndexError:
-                return Response(
-                    {'getChildren_Error': 'ID not found'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            for i in range(len(queryset.values('final'))):
-                final_array.append(queryset.values('final')[i]['final'])
-            if False not in final_array:
-                serializer = NodeSerializer(queryset, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                serializer = NodeSerializerArticleId(queryset,many=True)
-                return Response(serializer.data,status=status.HTTP_200_OK)
+        queryset = CategoryNode.objects.filter(parent_id=parent_id)
+        try:
+            queryset[0]
+        except IndexError:
+            return Response(
+                {'getChildren_Error': 'ID not found'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        for i in range(len(queryset.values('final'))):
+            final_array.append(queryset.values('final')[i]['final'])
+        if False not in final_array:
+            serializer = NodeSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({'getChildren_Error':'ValueError'},status=status.HTTP_400_BAD_REQUEST)
+            serializer = NodeSerializerArticleId(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class getNode(APIView):
@@ -144,4 +141,3 @@ class getArticlesByNode(APIView):
             return Response(last_articles)
         else:
             return Response({'getArticlesByNode':'Это не конечная статья'},status=status.HTTP_400_BAD_REQUEST)
-
