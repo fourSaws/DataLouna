@@ -32,10 +32,14 @@ class Keyword_Article(models.Model):
         default=None,
         on_delete=models.SET_DEFAULT,
         verbose_name='ID Ключевого слова',
-        null=True
+        null=True,
     )
     article_id = models.ForeignKey(
-        'Article', default=None, on_delete=models.SET_DEFAULT, verbose_name='ID Статьи', null=True
+        'Article',
+        default=None,
+        on_delete=models.SET_DEFAULT,
+        verbose_name='ID Статьи',
+        null=True,
     )
 
     def __str__(self):
@@ -56,7 +60,9 @@ class CategoryNode(models.Model):
         null=True,
     )
     articles = models.ManyToManyField(
-        'Article', related_name='art', blank=True,
+        'Article',
+        related_name='art',
+        blank=True,
     )
     valid = models.BooleanField()
     final = models.BooleanField(default=False)
@@ -75,4 +81,3 @@ class CategoryNode(models.Model):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-
