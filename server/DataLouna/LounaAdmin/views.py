@@ -102,10 +102,10 @@ class getArticlesByKeyWords(APIView):
         word_split = word.split(' ')
         if word:
             for word in word_split:
-                for keyword in Keywords.objects.filter(text__istartswith=word).values('id'):
-                    key_word_found.append(
-                        keyword['id']
-                    )
+                for keyword in Keywords.objects.filter(text__istartswith=word).values(
+                    'id'
+                ):
+                    key_word_found.append(keyword['id'])
             print(key_word_found)
             for keyword in key_word_found:
                 keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values(
