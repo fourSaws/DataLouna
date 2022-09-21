@@ -73,12 +73,15 @@ class getNode(APIView):
                 queryset[0]
             except IndexError:
                 return Response(
-                    {'getNode_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST
+                    {'getNode_Error': 'ID not found'},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             serializers = NodeSerializerArticleId(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response({'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class getArticlesByKeyWords(APIView):
@@ -99,22 +102,29 @@ class getArticlesByKeyWords(APIView):
         word_split = word.split(' ')
         if word:
             for word in word_split:
-                for keyword in Keywords.objects.filter(text__istartswith=word).values('id'):
-                    key_word_found.append(keyword['id'])
+                key_word_found.append(
+                    Keywords.objects.filter(text__istartswith=word).values('id')[0][
+                        'id'
+                    ]
+                )
             print(key_word_found)
             for keyword in key_word_found:
-                keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values('article_id')
+                keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values(
+                    'article_id'
+                )
                 if not keyword_A:
                     continue
                 else:
-                    articles_id += [ids for ids in keyword_A]
+                    articles_id = [ids for ids in keyword_A]
             for i in range(len(articles_id)):
                 a = Article.objects.filter(id=articles_id[i]['article_id']).values()[0]
                 art.append(a)
             return Response(art)
         else:
-            return Response({'getArticlesByKeyWords_Error': "ValueError"}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+                {'getArticlesByKeyWords_Error': "ValueError"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class getArticlesByNode(APIView):
@@ -130,13 +140,21 @@ class getArticlesByNode(APIView):
     @swagger_auto_schema(manual_parameters=[node_id_param_config])
     def get(self, request):
         node_id = self.request.query_params.get('node_id')
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0]['articles']
+        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0][
+            'articles'
+        ]
         try:
             filter_by_id
         except IndexError:
-            return Response({'getArticlesByNode_Error': 'ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getArticlesByNode_Error': 'ID not found'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if CategoryNode.objects.filter(id=node_id).values('final')[0]['final']:
             last_articles = Article.objects.filter(id=filter_by_id).values()
             return Response(last_articles)
         else:
-            return Response({'getArticlesByNode': 'В этой категории final!=True'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'getArticlesByNode': 'В этой категории final!=True'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
