@@ -48,7 +48,9 @@ class Keyword_Article(models.Model):
 
 
 class CategoryNode(models.Model):
-    children = models.ManyToManyField('CategoryNode',default=None, null=True, related_name='child', blank=True)
+    children = models.ManyToManyField(
+        'CategoryNode', default=None, null=True, related_name='child', blank=True
+    )
     name = models.CharField(max_length=255)
     parent = models.ForeignKey(
         'CategoryNode',
@@ -58,7 +60,9 @@ class CategoryNode(models.Model):
         null=True,
     )
     articles = models.ManyToManyField(
-        'Article', related_name='art', blank=True,
+        'Article',
+        related_name='art',
+        blank=True,
     )
     valid = models.BooleanField()
     final = models.BooleanField(default=False)
@@ -79,9 +83,6 @@ class CategoryNode(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-
     class Meta:
         verbose_name = 'Узел'
         verbose_name_plural = 'Узлы'
-
-
