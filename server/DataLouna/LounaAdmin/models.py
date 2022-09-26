@@ -97,15 +97,15 @@ class CategoryNode(models.Model):
         if self.parent:
             self.parent.save()
         return super(CategoryNode, self).save()
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
-
 @receiver(pre_delete, sender=CategoryNode)
-def delete_image_hook(sender, instance:CategoryNode, using, **kwargs):
-    instance.parent.save(deleted_child = instance)
+def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
+    instance.parent.save(deleted_child=instance)
 
 
 @receiver(m2m_changed, sender=CategoryNode.articles.through)
