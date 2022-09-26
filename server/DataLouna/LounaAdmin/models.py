@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 
 
 class Article(models.Model):
@@ -78,6 +80,29 @@ class CategoryNode(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def save(self, *args, **kwargs):
+        super(CategoryNode, self).save()
+        for p in CategoryNode.objects.all().values('parent'):
+            if self.parent.id == p['parent'] and self.articles.all() != None:
+                self.valid = True
+                return super(CategoryNode, self).save()
+            else:
+                self.valid = False
+                return super(CategoryNode, self).save()
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+
+@receiver(m2m_changed, sender=CategoryNode.articles.through)
+def children_post_save(instance: CategoryNode, action, *args, **kwargs):
+    if action != 'post_add' and action != 'post_remove':
+        return None
+    for p in CategoryNode.objects.all().values('parent'):
+        if instance.parent.id == p['parent'] and instance.articles.all() != None:
+            instance.valid = True
+            instance.save()
+        else:
+            instance.valid = False
+            instance.save()
