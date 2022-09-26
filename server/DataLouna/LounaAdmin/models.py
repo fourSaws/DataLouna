@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, post_delete, pre_delete
 from django.dispatch import receiver
 
 
@@ -66,7 +66,7 @@ class CategoryNode(models.Model):
         related_name='art',
         blank=True,
     )
-    valid = models.BooleanField()
+    valid = models.BooleanField(default=False)
     final = models.BooleanField(default=False)
 
     def articles_names(self):
@@ -81,28 +81,50 @@ class CategoryNode(models.Model):
         return f"{self.name}"
 
     def save(self, *args, **kwargs):
+        print(f'save:{self}')
+        if kwargs.get('super'):
+            return super(CategoryNode, self).save()
         super(CategoryNode, self).save()
-        for p in CategoryNode.objects.all().values('parent'):
-            if self.parent.id == p['parent'] and self.articles.all() != None:
-                self.valid = True
-                return super(CategoryNode, self).save()
-            else:
-                self.valid = False
-                return super(CategoryNode, self).save()
-
+        has_kids = False
+        for p in CategoryNode.objects.filter(parent=self.id):
+            if p.valid and p != kwargs.get('deleted_child'):
+                has_kids = True
+                break
+        has_articles = bool(self.articles.all())
+        self.valid = has_kids != has_articles
+        self.final = has_articles
+        super(CategoryNode, self).save()
+        if self.parent:
+            self.parent.save()
+        return super(CategoryNode, self).save()
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
+
+@receiver(pre_delete, sender=CategoryNode)
+def delete_image_hook(sender, instance:CategoryNode, using, **kwargs):
+    instance.parent.save(deleted_child = instance)
+
+
 @receiver(m2m_changed, sender=CategoryNode.articles.through)
 def children_post_save(instance: CategoryNode, action, *args, **kwargs):
+    print(f'm2m_changed:{instance}')
     if action != 'post_add' and action != 'post_remove':
         return None
-    for p in CategoryNode.objects.all().values('parent'):
-        if instance.parent.id == p['parent'] and instance.articles.all() != None:
-            instance.valid = True
-            instance.save()
-        else:
-            instance.valid = False
-            instance.save()
+    has_kids = False
+    for p in CategoryNode.objects.filter(parent=instance.id):
+        if p.valid:
+            has_kids = True
+            break
+
+    has_articles = bool(instance.articles.all())
+    instance.valid = has_kids != has_articles
+    instance.final = has_articles
+    instance.save(super=True)
+
+    if instance.parent:
+        instance.parent.save()
+    print(f'm2m_changed:{has_kids=},{has_articles=}')
+    return None
