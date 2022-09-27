@@ -24,8 +24,7 @@ class KeywordsAdmin(admin.ModelAdmin):
 class CategoryNodeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'articles_names', 'parent', 'valid')
     filter_horizontal = ['articles']
-    readonly_fields = ['valid','final']
-
+    readonly_fields = ['valid', 'final']
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
