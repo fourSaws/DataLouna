@@ -41,6 +41,7 @@ class getChildren(APIView):
         description='Description',
         type=openapi.TYPE_STRING,
     )
+
     @swagger_auto_schema(manual_parameters=[parent_param_config])
     def get(self, request):
         parent_id = self.request.query_params.get('parent_id')
