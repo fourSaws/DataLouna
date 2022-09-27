@@ -25,4 +25,4 @@ class NodeSerializer(serializers.ModelSerializer):
 class NodeSerializerArticleId(serializers.ModelSerializer):
     class Meta:
         model = CategoryNode
-        fields = ('id', 'name', 'parent', 'final')
+        fields = ('id', 'name', 'parent', 'final','valid')
