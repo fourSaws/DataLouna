@@ -45,7 +45,7 @@ class getChildren(APIView):
     @swagger_auto_schema(manual_parameters=[parent_param_config])
     def get(self, request):
         parent_id = self.request.query_params.get('parent_id')
-        queryset = CategoryNode.objects.filter(parent_id=parent_id)
+        queryset = CategoryNode.objects.filter(parent_id=parent_id).filter(valid=True)
         try:
             queryset[0]
         except IndexError:
@@ -68,7 +68,7 @@ class getNode(APIView):
     def get(self, request):
         id = self.request.query_params.get('id')
         if id:
-            queryset = CategoryNode.objects.filter(id=id)
+            queryset = CategoryNode.objects.filter(id=id).filter(valid=True)
             try:
                 queryset[0]
             except IndexError:
