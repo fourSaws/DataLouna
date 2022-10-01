@@ -14,9 +14,7 @@ def RedirectToAdmin(request):
 
 
 class getArticle(APIView):
-    id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
-    )
+    id_param_config = openapi.Parameter('id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
     @swagger_auto_schema(manual_parameters=[id_param_config])
     def get(self, request):
@@ -28,9 +26,7 @@ class getArticle(APIView):
             instance = Article.objects.filter(id=param_id).values()[0]
             return Response(instance)
         except IndexError:
-            return Response(
-                {'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class getChildren(APIView):
@@ -41,6 +37,7 @@ class getChildren(APIView):
         description='Description',
         type=openapi.TYPE_STRING,
     )
+
     @swagger_auto_schema(manual_parameters=[parent_param_config])
     def get(self, request):
         parent_id = self.request.query_params.get('parent_id')
@@ -59,9 +56,7 @@ class getChildren(APIView):
 
 class getNode(APIView):
     serializer_class = NodeSerializer
-    id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
-    )
+    id_param_config = openapi.Parameter('id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
     @swagger_auto_schema(manual_parameters=[id_param_config])
     def get(self, request):
@@ -78,9 +73,7 @@ class getNode(APIView):
             serializers = NodeSerializerArticleId(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response(
-                {'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class getArticlesByKeyWords(APIView):
@@ -102,15 +95,11 @@ class getArticlesByKeyWords(APIView):
         word_split = word.split(' ')
         if word:
             for word in word_split:
-                for keyword in Keywords.objects.filter(text__istartswith=word).values(
-                    'id'
-                ):
+                for keyword in Keywords.objects.filter(text__istartswith=word).values('id'):
                     key_word_found.append(keyword['id'])
             print(key_word_found)
             for keyword in key_word_found:
-                keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values(
-                    'article_id'
-                )
+                keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values('article_id')
                 if not keyword_A:
                     continue
                 else:
@@ -141,9 +130,7 @@ class getArticlesByNode(APIView):
     @swagger_auto_schema(manual_parameters=[node_id_param_config])
     def get(self, request):
         node_id = self.request.query_params.get('node_id')
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0][
-            'articles'
-        ]
+        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0]['articles']
         try:
             filter_by_id
         except IndexError:

@@ -30,13 +30,9 @@ def getArticle(id: int) -> Union[Article, None]:
 def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
     resp = requests.get(apiUrl + "/getArticlesByKeyWords", params={'word': keyWord})
     if resp.status_code == 400:
-        print(
-            "================================================================================"
-        )
+        print("================================================================================")
         print("getArticlesByKeyWord | keyWord = " + keyWord + " | 400 error")
-        print(
-            "================================================================================"
-        )
+        print("================================================================================")
         return None
     data = resp.json()
     articles = []
