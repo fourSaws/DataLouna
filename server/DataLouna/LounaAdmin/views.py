@@ -97,6 +97,7 @@ class getArticlesByKeyWords(APIView):
         articles_id = []
         art = []
         key_word_found = []
+        id_check = []
         word = self.request.query_params.get('word')
         word_split = word.split(' ')
         if word:
@@ -116,7 +117,9 @@ class getArticlesByKeyWords(APIView):
                     articles_id += [ids for ids in keyword_A]
             for i in range(len(articles_id)):
                 a = Article.objects.filter(id=articles_id[i]['article_id']).values()[0]
-                art.append(a)
+                if a['id'] not in id_check:
+                    id_check.append(a['id'])
+                    art.append(a)
             return Response(art)
         else:
             return Response(
