@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Article, CategoryNode, Keywords, Keyword_Article
+from .models import Article, CategoryNode, Keywords, KeywordArticle
 from .serializer import NodeSerializer, ArticleSerializer, NodeSerializerArticleId
 
 
@@ -94,39 +94,27 @@ class getArticlesByKeyWords(APIView):
 
     @swagger_auto_schema(manual_parameters=[word_param_config])
     def get(self, request):
-        articles_id = []
-        art = []
-        key_word_found = []
-        id_check = []
+        articles_by_keywords = []
+        result = []
+        keyword_found = []
         word = self.request.query_params.get('word')
         word_split = word.split(' ')
         if word:
             for word in word_split:
-                for keyword in Keywords.objects.filter(text__istartswith=word).values(
-                    'id'
-                ):
-                    key_word_found.append(keyword['id'])
-            print(key_word_found)
-            for keyword in key_word_found:
-                keyword_A = Keyword_Article.objects.filter(keywords_id=keyword).values(
-                    'article_id'
-                )
-                if not keyword_A:
-                    continue
-                else:
-                    articles_id += [ids for ids in keyword_A]
-            for i in range(len(articles_id)):
-                a = Article.objects.filter(id=articles_id[i]['article_id']).values()[0]
-                if a['id'] not in id_check:
-                    id_check.append(a['id'])
-                    art.append(a)
-            return Response(art)
-        else:
-            return Response(
-                {'getArticlesByKeyWords_Error': "ValueError"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+                for keyword in Keywords.objects.filter(text__istartswith=word):
+                    keyword_found.append(keyword)
+            for word in keyword_found:
+                articles_by_keywords.append(set(i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')))
+            result = articles_by_keywords[0]
+            print(result)
+            for i in articles_by_keywords[1:]:
+                result = result & i
+                print(result)
+            if not result :
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                articles = Article.objects.filter(id__in=result).values()
+                return Response(articles)
 
 class getArticlesByNode(APIView):
     serializer_class = ArticleSerializer

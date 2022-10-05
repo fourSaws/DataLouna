@@ -28,7 +28,7 @@ class Keywords(models.Model):
         verbose_name_plural = 'Ключевые слова'
 
 
-class Keyword_Article(models.Model):
+class KeywordArticle(models.Model):
     keywords_id = models.ForeignKey(
         'Keywords',
         default=None,
