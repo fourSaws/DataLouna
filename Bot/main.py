@@ -56,9 +56,7 @@ def send_category(message: types.Message):
                 + str(i.parentId),
             )
         )  # parentId
-    bot.send_message(
-        message.from_user.id, root.name + "\n\nКатегории", reply_markup=markup
-    )
+    bot.send_message(message.from_user.id, root.name + "\n\nКатегории", reply_markup=markup)
 
 
 '''

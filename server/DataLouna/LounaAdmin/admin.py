@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Article, Keywords, CategoryNode, Keyword_Article
+from .models import Article, Keywords, CategoryNode, KeywordArticle
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -38,4 +38,4 @@ class KeywordsArticleAdmin(admin.ModelAdmin):
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
 admin.site.register(CategoryNode, CategoryNodeAdmin)
-admin.site.register(Keyword_Article, KeywordsArticleAdmin)
+admin.site.register(KeywordArticle, KeywordsArticleAdmin)
