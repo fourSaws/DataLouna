@@ -99,23 +99,28 @@ class getArticlesByKeyWords(APIView):
         result = []
         keyword_found = []
         word = self.request.query_params.get('word')
-        word_split = word.split(' ')
         if word:
+            word_split = word.split(' ')
             for word in word_split:
                 for keyword in Keywords.objects.filter(text__istartswith=word):
                     keyword_found.append(keyword)
+            if not word_split:
+                return Response(status=status.HTTP_404_NOT_FOUND)
             for word in keyword_found:
                 articles_by_keywords.append(set(i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')))
+            if not articles_by_keywords:
+                return Response(status=status.HTTP_404_NOT_FOUND)
             result = articles_by_keywords[0]
             print(result)
             for i in articles_by_keywords[1:]:
                 result = result & i
                 print(result)
-            if not result :
-                return Response(status=status.HTTP_404_NOT_FOUND)
+
             else:
                 articles = Article.objects.filter(id__in=result).values()
                 return Response(articles)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class getArticlesByNode(APIView):
     serializer_class = ArticleSerializer
