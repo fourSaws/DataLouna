@@ -103,6 +103,19 @@ class CategoryNode(models.Model):
         verbose_name_plural = 'Категории'
 
 
+class User(models.Model):
+    site_id = models.IntegerField(verbose_name='ID с сайта')
+    chat_id = models.IntegerField(verbose_name='Чат ID')
+    subscription_status = models.BooleanField(default=False,verbose_name='Статус подписки')
+    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки')
+    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки')
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
+
+
 @receiver(pre_delete, sender=CategoryNode)
 def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
     instance.parent.save(deleted_child=instance)
