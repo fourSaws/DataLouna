@@ -172,3 +172,15 @@ class createUser(APIView):
             return Response(instance)
 
 
+class getUser(APIView):
+
+    def get(self,request):
+        chat_id = self.request.query_params.get('chat_id')
+        user = User.objects.filter(chat_id=chat_id).values()
+        try:
+            user[0]
+        except IndexError:
+            return Response({"getUser_Error":"ID not found"},status=status.HTTP_404_NOT_FOUND)
+        return Response(user)
+
+
