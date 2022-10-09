@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Article, CategoryNode, Keywords, KeywordArticle
+from .models import Article, CategoryNode, Keywords, KeywordArticle,User
 from .serializer import NodeSerializer, ArticleSerializer, NodeSerializerArticleId
 
 
@@ -153,3 +153,22 @@ class getArticlesByNode(APIView):
                 {'getArticlesByNode': 'В этой категории final!=True'},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+class createUser(APIView):
+    def get(self,request):
+        site_id = self.request.query_params.get('site_id')
+        chat_id = self.request.query_params.get('chat_id')
+        subscription_status = self.request.query_params.get('subscription_status')
+        subscription_paid_date = self.request.query_params.get('subscription_paid_date')
+        subscription_end_date = self.request.query_params.get('subscription_end_date')
+        id_check = User.objects.filter(chat_id=chat_id).values()
+        if not id_check.exists():
+            User.objects.create(site_id=site_id,chat_id=chat_id,subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            instance = User.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
+        else:
+            User.objects.update(subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            instance = User.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
+
+
