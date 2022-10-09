@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Article, Keywords, CategoryNode, KeywordArticle,User
+from .models import Article, Keywords, CategoryNode, KeywordArticle, User
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -28,7 +28,7 @@ class CategoryNodeAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['site_id','chat_id','subscription_status','subscription_paid_date','subscription_end_date']
+    list_display = ['site_id', 'chat_id', 'subscription_status', 'subscription_paid_date', 'subscription_end_date']
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
@@ -43,4 +43,4 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
 admin.site.register(CategoryNode, CategoryNodeAdmin)
 admin.site.register(KeywordArticle, KeywordsArticleAdmin)
-admin.site.register(User,UserAdmin)
+admin.site.register(User, UserAdmin)
