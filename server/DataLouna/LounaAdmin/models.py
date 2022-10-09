@@ -1,5 +1,7 @@
+from datetime import datetime
+
 from django.db import models
-from django.db.models.signals import m2m_changed, post_delete, pre_delete
+from django.db.models.signals import m2m_changed, pre_delete
 from django.dispatch import receiver
 
 
@@ -101,6 +103,34 @@ class CategoryNode(models.Model):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+
+class User(models.Model):
+    ZERO = 'ZERO'
+    FIRST = 'FIRST'
+    SECOND = 'SECOND'
+    THIRD = 'THIRD'
+    FOURTH = 'FOURTH'
+    STATUS_CHOICES = [
+        (ZERO, 'Нет аккаунта на сайте'),
+        (FIRST, 'Не оформил триал'),
+        (SECOND, 'Триал оформлен'),
+        (THIRD, 'Оформил (продлил?) подписку'),
+        (FOURTH,'Карта удалена сразу'),
+    ]
+
+
+    site_id = models.IntegerField(verbose_name='ID с сайта')
+    chat_id = models.IntegerField(verbose_name='Чат ID')
+    subscription_status = models.CharField(choices=STATUS_CHOICES,max_length=255,verbose_name='Статус подписки')
+    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки')
+    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки')
+
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
 
 
 @receiver(pre_delete, sender=CategoryNode)

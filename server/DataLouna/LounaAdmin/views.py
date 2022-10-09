@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Article, CategoryNode, Keywords, KeywordArticle
+from .models import Article, CategoryNode, Keywords, KeywordArticle,User
 from .serializer import NodeSerializer, ArticleSerializer, NodeSerializerArticleId
 
 
@@ -14,7 +14,9 @@ def RedirectToAdmin(request):
 
 
 class getArticle(APIView):
-    id_param_config = openapi.Parameter('id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    id_param_config = openapi.Parameter(
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
 
     @swagger_auto_schema(manual_parameters=[id_param_config])
     def get(self, request):
@@ -26,7 +28,9 @@ class getArticle(APIView):
             instance = Article.objects.filter(id=param_id).values()[0]
             return Response(instance)
         except IndexError:
-            return Response({'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class getChildren(APIView):
@@ -56,7 +60,9 @@ class getChildren(APIView):
 
 class getNode(APIView):
     serializer_class = NodeSerializer
-    id_param_config = openapi.Parameter('id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    id_param_config = openapi.Parameter(
+        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+    )
 
     @swagger_auto_schema(manual_parameters=[id_param_config])
     def get(self, request):
@@ -73,7 +79,9 @@ class getNode(APIView):
             serializers = NodeSerializerArticleId(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response({'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class getArticlesByKeyWords(APIView):
@@ -99,11 +107,7 @@ class getArticlesByKeyWords(APIView):
             if not word_split:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             for word in keyword_found:
-                articles_by_keywords.append(
-                    set(
-                        i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')
-                    )
-                )
+                articles_by_keywords.append(set(i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')))
             if not articles_by_keywords:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             result = articles_by_keywords[0]
@@ -118,7 +122,6 @@ class getArticlesByKeyWords(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
 class getArticlesByNode(APIView):
     serializer_class = ArticleSerializer
 
@@ -132,7 +135,9 @@ class getArticlesByNode(APIView):
     @swagger_auto_schema(manual_parameters=[node_id_param_config])
     def get(self, request):
         node_id = self.request.query_params.get('node_id')
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0]['articles']
+        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0][
+            'articles'
+        ]
         try:
             filter_by_id
         except IndexError:
@@ -148,3 +153,22 @@ class getArticlesByNode(APIView):
                 {'getArticlesByNode': 'В этой категории final!=True'},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+class createUser(APIView):
+    def get(self,request):
+        site_id = self.request.query_params.get('site_id')
+        chat_id = self.request.query_params.get('chat_id')
+        subscription_status = self.request.query_params.get('subscription_status')
+        subscription_paid_date = self.request.query_params.get('subscription_paid_date')
+        subscription_end_date = self.request.query_params.get('subscription_end_date')
+        id_check = User.objects.filter(chat_id=chat_id).values()
+        if not id_check.exists():
+            User.objects.create(site_id=site_id,chat_id=chat_id,subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            instance = User.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
+        else:
+            User.objects.update(subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            instance = User.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
+
+
