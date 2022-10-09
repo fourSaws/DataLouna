@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Article, Keywords, CategoryNode, KeywordArticle,User,NoviceNewsTellers,InactiveNewsTellers,Notification
+from .models import Article, Keywords, CategoryNode, KeywordArticle
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -27,21 +27,6 @@ class CategoryNodeAdmin(admin.ModelAdmin):
     readonly_fields = ['valid', 'final']
 
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['site_id','chat_id','subscription_status','subscription_paid_date','subscription_end_date']
-
-
-class NoviceNewsTellersAdmin(admin.ModelAdmin):
-    list_display = ['after_time','text']
-
-class InactiveNewsTellersAdmin(admin.ModelAdmin):
-    list_display = ['after_time', 'text']
-
-class NotificationAdmin(admin.ModelAdmin):
-    list_display = ['type', 'text']
-
-
-
 class KeywordsArticleAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -54,7 +39,3 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
 admin.site.register(CategoryNode, CategoryNodeAdmin)
 admin.site.register(KeywordArticle, KeywordsArticleAdmin)
-admin.site.register(User,UserAdmin)
-admin.site.register(NoviceNewsTellers,NoviceNewsTellersAdmin)
-admin.site.register(InactiveNewsTellers,InactiveNewsTellersAdmin)
-admin.site.register(Notification,NotificationAdmin)
