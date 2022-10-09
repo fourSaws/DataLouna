@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -156,19 +159,28 @@ class getArticlesByNode(APIView):
 
 class createUser(APIView):
     def get(self,request):
-        site_id = self.request.query_params.get('site_id')
         chat_id = self.request.query_params.get('chat_id')
-        subscription_status = self.request.query_params.get('subscription_status')
-        subscription_paid_date = self.request.query_params.get('subscription_paid_date')
-        subscription_end_date = self.request.query_params.get('subscription_end_date')
         id_check = User.objects.filter(chat_id=chat_id).values()
         if not id_check.exists():
-            User.objects.create(site_id=site_id,chat_id=chat_id,subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            User.objects.create(site_id=None,chat_id=chat_id,subscription_status='ZERO',subscription_paid_date=None,subscription_end_date=None)
             instance = User.objects.filter(chat_id=chat_id).values()
             return Response(instance)
         else:
-            User.objects.update(subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
+            site_id = self.request.query_params.get('site_id')
+            subscription_status = self.request.query_params.get('subscription_status')
+            subscription_paid_date = self.request.query_params.get('subscription_paid_date')
+            subscription_end_date = self.request.query_params.get('subscription_end_date')
+            User.objects.update(site_id=site_id,subscription_status=subscription_status,subscription_paid_date=subscription_paid_date,subscription_end_date=subscription_end_date)
             instance = User.objects.filter(chat_id=chat_id).values()
             return Response(instance)
 
+class getUser(APIView):
+    def get(self, request):
+        chat_id = self.request.query_params.get('chat_id')
+        user = User.objects.filter(chat_id=chat_id).values()
+        try:
+            user[0]
+        except IndexError:
+            return Response({'getUser_Error':'ID not found'},status=status.HTTP_404_NOT_FOUND)
+        return Response(user)
 

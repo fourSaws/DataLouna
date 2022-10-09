@@ -120,11 +120,11 @@ class User(models.Model):
     ]
 
 
-    site_id = models.IntegerField(verbose_name='ID с сайта')
-    chat_id = models.IntegerField(verbose_name='Чат ID')
-    subscription_status = models.CharField(choices=STATUS_CHOICES,max_length=255,verbose_name='Статус подписки')
-    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки')
-    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки')
+    site_id = models.IntegerField(verbose_name='ID на сайте',blank=True,null=True)
+    chat_id = models.IntegerField(verbose_name='Чат ID',blank=True,null=True)
+    subscription_status = models.CharField(choices=STATUS_CHOICES,max_length=255,verbose_name='Статус подписки',null=True)
+    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки',null=True,blank=True)
+    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки',null=True,blank=True)
 
 
     class Meta:
