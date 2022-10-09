@@ -9,7 +9,7 @@ from .views import (
     getArticlesByKeyWords,
     getArticlesByNode,
     createUser,
-    getUser
+    getUser,
 )
 
 app_name = 'LounaAdmin'
@@ -20,6 +20,6 @@ urlpatterns = [
     path('api/getNode', getNode.as_view()),
     path('api/getArticlesByKeyWords', getArticlesByKeyWords.as_view()),
     path('api/getArticlesByNode', getArticlesByNode.as_view()),
-    path('api/createUser',createUser.as_view()),
-    path('api/getUser',getUser.as_view())
+    path('api/createUser', createUser.as_view()),
+    path('api/getUser', getUser.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

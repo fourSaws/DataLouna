@@ -50,4 +50,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = modelUser
-        fields = ('__all__')
+        fields = '__all__'
