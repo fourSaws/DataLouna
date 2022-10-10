@@ -109,10 +109,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
-
+USE_L10N = False
 USE_I18N = True
 
 USE_TZ = True
+DATE_FORMAT = 'd.m.Y'
+DATE_INPUT_FORMATS = (('d-m-Y'),)
 
 
 # Static files (CSS, JavaScript, Images)
@@ -121,6 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

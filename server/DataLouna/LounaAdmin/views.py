@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -5,8 +8,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Article, CategoryNode, Keywords, KeywordArticle, User
-from .serializer import NodeSerializer, ArticleSerializer, NodeSerializerArticleId
+from .models import Article, CategoryNode, Keywords, KeywordArticle, modelUser
+from .serializer import NodeSerializer, ArticleSerializer, NodeSerializerArticleId, UserSerializer
 
 
 def RedirectToAdmin(request):
@@ -88,7 +91,6 @@ class getArticlesByKeyWords(APIView):
     @swagger_auto_schema(manual_parameters=[word_param_config])
     def get(self, request):
         articles_by_keywords = []
-        result = []
         keyword_found = []
         word = self.request.query_params.get('word')
         if word:
@@ -151,28 +153,92 @@ class getArticlesByNode(APIView):
 
 
 class createUser(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                name="chat_id",
+                required=True,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="ID из бота",
+            ),
+            openapi.Parameter(
+                name='site_id',
+                type="integer",
+                in_=openapi.TYPE_INTEGER,
+                description="ID на сайте",
+            ),
+            openapi.Parameter(
+                name='subscription_status',
+                required=True,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="При создании ZERO, при апдейте либо "
+                "FIRST(Не оформил триал),"
+                "либо SECOND(Триал оформлен),"
+                "либо THIRD(Оформил (продлил?) подписку)"
+                "либо FOURTH(Карта удалена сразу)",
+            ),
+            openapi.Parameter(
+                name='subscription_paid_date',
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="Дата оплаты подписки, формат DD-MM-YYYY",
+            ),
+            openapi.Parameter(
+                name='subscription_end_date',
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="Дата окончания подписки, формат DD-MM-YYYY",
+            ),
+        ]
+    )
     def get(self, request):
-        site_id = self.request.query_params.get('site_id')
-        chat_id = self.request.query_params.get('chat_id')
-        subscription_status = self.request.query_params.get('subscription_status')
-        subscription_paid_date = self.request.query_params.get('subscription_paid_date')
-        subscription_end_date = self.request.query_params.get('subscription_end_date')
-        id_check = User.objects.filter(chat_id=chat_id).values()
-        if not id_check.exists():
-            User.objects.create(
+        site_id = request.GET.get('site_id')
+        chat_id = request.GET.get('chat_id')
+        subscription_status = request.GET.get('subscription_status')
+        subscription_paid_date = request.GET.get('subscription_paid_date')
+        subscription_end_date = request.GET.get('subscription_end_date')
+        same_rec = modelUser.objects.filter(chat_id=chat_id).values('chat_id')
+        if not same_rec.exists():
+            modelUser.objects.create(
+                site_id=None,
+                chat_id=chat_id,
+                subscription_status='ZERO',
+                subscription_paid_date=None,
+                subscription_end_date=None,
+            )
+            instance = modelUser.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
+
+        if same_rec.exists():
+            modelUser.objects.filter(chat_id=chat_id).update(
                 site_id=site_id,
                 chat_id=chat_id,
                 subscription_status=subscription_status,
                 subscription_paid_date=subscription_paid_date,
                 subscription_end_date=subscription_end_date,
             )
-            instance = User.objects.filter(chat_id=chat_id).values()
+            instance = modelUser.objects.filter(chat_id=chat_id).values()
             return Response(instance)
-        else:
-            User.objects.update(
-                subscription_status=subscription_status,
-                subscription_paid_date=subscription_paid_date,
-                subscription_end_date=subscription_end_date,
-            )
-            instance = User.objects.filter(chat_id=chat_id).values()
-            return Response(instance)
+
+
+class getUser(APIView):
+    serializer_class = UserSerializer
+
+    get_user_config = openapi.Parameter(
+        'chat_id',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING,
+    )
+
+    @swagger_auto_schema(manual_parameters=[get_user_config])
+    def get(self, request):
+        chat_id = self.request.query_params.get('chat_id')
+        user = modelUser.objects.filter(chat_id=chat_id).values()
+        try:
+            user[0]
+        except IndexError:
+            return Response({'getUser_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(user)
