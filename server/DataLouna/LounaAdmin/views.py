@@ -1,6 +1,3 @@
-from datetime import datetime
-
-from django.db import IntegrityError
 from django.shortcuts import redirect
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -20,8 +17,22 @@ class getArticle(APIView):
     id_param_config = openapi.Parameter(
         'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
     )
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "Article object": "id,title,text,photo"
+                }
+            }
+        ),
+        "404": openapi.Response(description="404 Response",
+                                examples={
+                                    'getArticle_Error': 'ID not found'
+                                }),
+    }
 
-    @swagger_auto_schema(manual_parameters=[id_param_config])
+    @swagger_auto_schema(manual_parameters=[id_param_config], responses=response_schema_dict)
     def get(self, request):
         try:
             param_id = self.request.query_params.get('id')
@@ -38,14 +49,29 @@ class getArticle(APIView):
 
 class getChildren(APIView):
     serializer_class = NodeSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "CategoryNode object": "id,name,parent,final,valid"
+                }
+            }
+        ),
+        "400": openapi.Response(description="400 Response",
+                                examples={
+                                    'getChildren_Error': 'ID not found'
+                                }),
+    }
+
     parent_param_config = openapi.Parameter(
         'parent_id',
         in_=openapi.IN_QUERY,
-        description='Description',
+        description='Получить ребенка родителя',
         type=openapi.TYPE_STRING,
     )
 
-    @swagger_auto_schema(manual_parameters=[parent_param_config])
+    @swagger_auto_schema(manual_parameters=[parent_param_config], responses=response_schema_dict)
     def get(self, request):
         parent_id = self.request.query_params.get('parent_id')
         queryset = CategoryNode.objects.filter(parent_id=parent_id).filter(valid=True)
@@ -63,11 +89,23 @@ class getChildren(APIView):
 
 class getNode(APIView):
     serializer_class = NodeSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "CategoryNode object": "id,name,parent,final,valid"
+                }
+            }
+        ),
+        "400": openapi.Response(description="400 Response", ),
+    }
+
     id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
+        'id', in_=openapi.IN_QUERY, description='Получение узла', type=openapi.TYPE_STRING
     )
 
-    @swagger_auto_schema(manual_parameters=[id_param_config])
+    @swagger_auto_schema(manual_parameters=[id_param_config], responses=response_schema_dict)
     def get(self, request):
         id = self.request.query_params.get('id')
         if id:
@@ -89,14 +127,27 @@ class getNode(APIView):
 
 class getArticlesByKeyWords(APIView):
     serializer_class = NodeSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "Article object": "id,title,text,photo"
+                }
+            }
+        ),
+        "400": openapi.Response(description="404 Response", ),
+        "404": openapi.Response(description="400 Response"),
+    }
+
     word_param_config = openapi.Parameter(
         'word',
         in_=openapi.IN_QUERY,
-        description='Description',
+        description='Ключевые слова',
         type=openapi.TYPE_STRING,
     )
 
-    @swagger_auto_schema(manual_parameters=[word_param_config])
+    @swagger_auto_schema(manual_parameters=[word_param_config], responses=response_schema_dict)
     def get(self, request):
         articles_by_keywords = []
         keyword_found = []
@@ -114,10 +165,8 @@ class getArticlesByKeyWords(APIView):
             if not articles_by_keywords:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             result = articles_by_keywords[0]
-            print(result)
             for i in articles_by_keywords[1:]:
                 result = result & i
-                print(result)
 
             else:
                 articles = Article.objects.filter(id__in=result).values()
@@ -128,15 +177,34 @@ class getArticlesByKeyWords(APIView):
 
 class getArticlesByNode(APIView):
     serializer_class = ArticleSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "Article object": "id,title,text,photo"
+                }
+            }
+        ),
+        "404": openapi.Response(
+            description="404 Response",
+            examples={
+                "application/json": {
+                    "getArticlesByNode_Error": "В этой категории final!=True"
+
+                }
+            }
+        )
+    }
 
     node_id_param_config = openapi.Parameter(
         'node_id',
         in_=openapi.IN_QUERY,
-        description='Description',
+        description='Поиск по ID узла',
         type=openapi.TYPE_STRING,
     )
 
-    @swagger_auto_schema(manual_parameters=[node_id_param_config])
+    @swagger_auto_schema(manual_parameters=[node_id_param_config], responses=response_schema_dict)
     def get(self, request):
         node_id = self.request.query_params.get('node_id')
         filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0][
@@ -160,6 +228,22 @@ class getArticlesByNode(APIView):
 
 
 class createUser(APIView):
+    serializer_class = UserSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "chat_id": "1111",
+                    "site_id": "2222",
+                    "subscription_status": "FIRST",
+                    "subscription_paid_date": "DD-MM-YYYY",
+                    "subscription_end_date": "DD-MM-YYYY"
+                }
+            }
+        ),
+    }
+
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(name="chat_id", required=True, type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
                           description="ID из бота", ),
@@ -174,8 +258,7 @@ class createUser(APIView):
                           description="Дата оплаты подписки, формат DD-MM-YYYY", ),
         openapi.Parameter(name='subscription_end_date', type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
                           description="Дата окончания подписки, формат DD-MM-YYYY", ),
-
-    ])
+    ], responses=response_schema_dict)
     def get(self, request):
         site_id = request.GET.get('site_id')
         chat_id = request.GET.get('chat_id')
@@ -184,31 +267,54 @@ class createUser(APIView):
         subscription_end_date = request.GET.get('subscription_end_date')
         same_rec = modelUser.objects.filter(chat_id=chat_id).values('chat_id')
         if not same_rec.exists():
-                modelUser.objects.create(site_id=None, chat_id=chat_id, subscription_status='ZERO',
-                                         subscription_paid_date=None,
-                                         subscription_end_date=None)
-                instance = modelUser.objects.filter(chat_id=chat_id).values()
-                return Response(instance)
+            modelUser.objects.create(site_id=None, chat_id=chat_id, subscription_status='ZERO',
+                                     subscription_paid_date=None,
+                                     subscription_end_date=None)
+            instance = modelUser.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
 
         if same_rec.exists():
-                modelUser.objects.filter(chat_id=chat_id).update(site_id=site_id, chat_id=chat_id, subscription_status=subscription_status,
-                                        subscription_paid_date=subscription_paid_date,
-                                        subscription_end_date=subscription_end_date)
-                instance = modelUser.objects.filter(chat_id=chat_id).values()
-                return Response(instance)
+            modelUser.objects.filter(chat_id=chat_id).update(site_id=site_id, chat_id=chat_id,
+                                                             subscription_status=subscription_status,
+                                                             subscription_paid_date=subscription_paid_date,
+                                                             subscription_end_date=subscription_end_date)
+            instance = modelUser.objects.filter(chat_id=chat_id).values()
+            return Response(instance)
 
 
 class getUser(APIView):
     serializer_class = UserSerializer
+    response_schema_dict = {
+        "200": openapi.Response(
+            description="200 Response",
+            examples={
+                "application/json": {
+                    "chat_id": "1111",
+                    "site_id": "2222",
+                    "subscription_status": "FIRST",
+                    "subscription_paid_date": "DD-MM-YYYY",
+                    "subscription_end_date": "DD-MM-YYYY"
+                }
+            }
+        ),
+        "404": openapi.Response(
+            description="404 Response",
+            examples={
+                "application/json": {
+                    'getUser_Error': 'ID not found'
 
+                }
+            }
+        ),
+    }
     get_user_config = openapi.Parameter(
         'chat_id',
         in_=openapi.IN_QUERY,
-        description='Description',
+        description='Получение пользователя по chat_id',
         type=openapi.TYPE_STRING,
     )
 
-    @swagger_auto_schema(manual_parameters=[get_user_config])
+    @swagger_auto_schema(manual_parameters=[get_user_config], responses=response_schema_dict)
     def get(self, request):
         chat_id = self.request.query_params.get('chat_id')
         user = modelUser.objects.filter(chat_id=chat_id).values()
