@@ -22,6 +22,7 @@ class getArticle(APIView):
         "404": openapi.Response(description="404 Response", examples={'getArticle_Error': 'ID not found'}),
     }
 
+
     @swagger_auto_schema(manual_parameters=[id_param_config], responses=response_schema_dict)
     def get(self, request):
         try:
@@ -83,6 +84,7 @@ class getNode(APIView):
     id_param_config = openapi.Parameter(
         'id', in_=openapi.IN_QUERY, description='Получение узла', type=openapi.TYPE_STRING
     )
+
 
     @swagger_auto_schema(manual_parameters=[id_param_config], responses=response_schema_dict)
     def get(self, request):
@@ -249,6 +251,7 @@ class createUser(APIView):
             ),
         ],
         responses=response_schema_dict,
+
     )
     def get(self, request):
         site_id = request.GET.get('site_id')
