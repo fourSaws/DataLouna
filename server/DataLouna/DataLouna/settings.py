@@ -113,8 +113,8 @@ USE_L10N = False
 USE_I18N = True
 
 USE_TZ = True
-DATE_FORMAT = ( ( 'd.m.Y' ))
-DATE_INPUT_FORMATS = ( ('d-m-Y'),)
+DATE_FORMAT = 'd.m.Y'
+DATE_INPUT_FORMATS = (('d-m-Y'),)
 
 
 # Static files (CSS, JavaScript, Images)
@@ -127,9 +127,7 @@ MEDIA_URL = "/media/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-SWAGGER_SETTINGS = {
-    "DEFAULT_MODEL_RENDERING": "example"
-}
+SWAGGER_SETTINGS = {"DEFAULT_MODEL_RENDERING": "example"}
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

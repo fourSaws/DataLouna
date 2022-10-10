@@ -116,21 +116,20 @@ class modelUser(models.Model):
         (FIRST, 'Не оформил триал'),
         (SECOND, 'Триал оформлен'),
         (THIRD, 'Оформил (продлил?) подписку'),
-        (FOURTH,'Карта удалена сразу'),
+        (FOURTH, 'Карта удалена сразу'),
     ]
 
-
-    site_id = models.IntegerField(verbose_name='ID на сайте',blank=True,null=True)
-    chat_id = models.IntegerField(verbose_name='Чат ID',blank=True,null=True)
-    subscription_status = models.CharField(choices=STATUS_CHOICES,max_length=255,verbose_name='Статус подписки',null=True)
-    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки',null=True,blank=True)
-    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки',null=True,blank=True)
-
+    site_id = models.IntegerField(verbose_name='ID на сайте', blank=True, null=True)
+    chat_id = models.IntegerField(verbose_name='Чат ID', blank=True, null=True)
+    subscription_status = models.CharField(
+        choices=STATUS_CHOICES, max_length=255, verbose_name='Статус подписки', null=True
+    )
+    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки', null=True, blank=True)
+    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
 
 
 @receiver(pre_delete, sender=CategoryNode)

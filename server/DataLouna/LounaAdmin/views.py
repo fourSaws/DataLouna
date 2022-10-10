@@ -14,22 +14,12 @@ def RedirectToAdmin(request):
 
 
 class getArticle(APIView):
-    id_param_config = openapi.Parameter(
-        'id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING
-    )
+    id_param_config = openapi.Parameter('id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
     response_schema_dict = {
         "200": openapi.Response(
-            description="200 Response",
-            examples={
-                "application/json": {
-                    "Article object": "id,title,text,photo"
-                }
-            }
+            description="200 Response", examples={"application/json": {"Article object": "id,title,text,photo"}}
         ),
-        "404": openapi.Response(description="404 Response",
-                                examples={
-                                    'getArticle_Error': 'ID not found'
-                                }),
+        "404": openapi.Response(description="404 Response", examples={'getArticle_Error': 'ID not found'}),
     }
 
     @swagger_auto_schema(manual_parameters=[id_param_config], responses=response_schema_dict)
@@ -42,9 +32,7 @@ class getArticle(APIView):
             instance = Article.objects.filter(id=param_id).values()[0]
             return Response(instance)
         except IndexError:
-            return Response(
-                {'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({'getArticle_Error': 'ID not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class getChildren(APIView):
@@ -52,16 +40,9 @@ class getChildren(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "CategoryNode object": "id,name,parent,final,valid"
-                }
-            }
+            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
         ),
-        "400": openapi.Response(description="400 Response",
-                                examples={
-                                    'getChildren_Error': 'ID not found'
-                                }),
+        "400": openapi.Response(description="400 Response", examples={'getChildren_Error': 'ID not found'}),
     }
 
     parent_param_config = openapi.Parameter(
@@ -92,13 +73,11 @@ class getNode(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "CategoryNode object": "id,name,parent,final,valid"
-                }
-            }
+            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
         ),
-        "400": openapi.Response(description="400 Response", ),
+        "400": openapi.Response(
+            description="400 Response",
+        ),
     }
 
     id_param_config = openapi.Parameter(
@@ -120,23 +99,18 @@ class getNode(APIView):
             serializers = NodeSerializerArticleId(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response(
-                {'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({'getNode_Error': 'ValueError'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class getArticlesByKeyWords(APIView):
     serializer_class = NodeSerializer
     response_schema_dict = {
         "200": openapi.Response(
-            description="200 Response",
-            examples={
-                "application/json": {
-                    "Article object": "id,title,text,photo"
-                }
-            }
+            description="200 Response", examples={"application/json": {"Article object": "id,title,text,photo"}}
         ),
-        "400": openapi.Response(description="404 Response", ),
+        "400": openapi.Response(
+            description="404 Response",
+        ),
         "404": openapi.Response(description="400 Response"),
     }
 
@@ -160,8 +134,11 @@ class getArticlesByKeyWords(APIView):
             if not word_split:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             for word in keyword_found:
-                articles_by_keywords.append(set(
-                    i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')))
+                articles_by_keywords.append(
+                    set(
+                        i['article_id'] for i in KeywordArticle.objects.filter(keywords_id=word.id).values('article_id')
+                    )
+                )
             if not articles_by_keywords:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             result = articles_by_keywords[0]
@@ -179,22 +156,12 @@ class getArticlesByNode(APIView):
     serializer_class = ArticleSerializer
     response_schema_dict = {
         "200": openapi.Response(
-            description="200 Response",
-            examples={
-                "application/json": {
-                    "Article object": "id,title,text,photo"
-                }
-            }
+            description="200 Response", examples={"application/json": {"Article object": "id,title,text,photo"}}
         ),
         "404": openapi.Response(
             description="404 Response",
-            examples={
-                "application/json": {
-                    "getArticlesByNode_Error": "В этой категории final!=True"
-
-                }
-            }
-        )
+            examples={"application/json": {"getArticlesByNode_Error": "В этой категории final!=True"}},
+        ),
     }
 
     node_id_param_config = openapi.Parameter(
@@ -207,9 +174,7 @@ class getArticlesByNode(APIView):
     @swagger_auto_schema(manual_parameters=[node_id_param_config], responses=response_schema_dict)
     def get(self, request):
         node_id = self.request.query_params.get('node_id')
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0][
-            'articles'
-        ]
+        filter_by_id = CategoryNode.objects.filter(id=node_id).values('articles')[0]['articles']
         try:
             filter_by_id
         except IndexError:
@@ -238,27 +203,53 @@ class createUser(APIView):
                     "site_id": "2222",
                     "subscription_status": "FIRST",
                     "subscription_paid_date": "DD-MM-YYYY",
-                    "subscription_end_date": "DD-MM-YYYY"
+                    "subscription_end_date": "DD-MM-YYYY",
                 }
-            }
+            },
         ),
     }
 
-    @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter(name="chat_id", required=True, type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
-                          description="ID из бота", ),
-        openapi.Parameter(name='site_id', type="integer", in_=openapi.TYPE_INTEGER, description="ID на сайте", ),
-        openapi.Parameter(name='subscription_status', required=True, type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
-                          description="При создании ZERO, при апдейте либо "
-                                      "FIRST(Не оформил триал),"
-                                      "либо SECOND(Триал оформлен),"
-                                      "либо THIRD(Оформил (продлил?) подписку)"
-                                      "либо FOURTH(Карта удалена сразу)", ),
-        openapi.Parameter(name='subscription_paid_date', type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
-                          description="Дата оплаты подписки, формат DD-MM-YYYY", ),
-        openapi.Parameter(name='subscription_end_date', type=openapi.TYPE_STRING, in_=openapi.IN_QUERY,
-                          description="Дата окончания подписки, формат DD-MM-YYYY", ),
-    ], responses=response_schema_dict)
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                name="chat_id",
+                required=True,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="ID из бота",
+            ),
+            openapi.Parameter(
+                name='site_id',
+                type="integer",
+                in_=openapi.TYPE_INTEGER,
+                description="ID на сайте",
+            ),
+            openapi.Parameter(
+                name='subscription_status',
+                required=True,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="При создании ZERO, при апдейте либо "
+                "FIRST(Не оформил триал),"
+                "либо SECOND(Триал оформлен),"
+                "либо THIRD(Оформил (продлил?) подписку)"
+                "либо FOURTH(Карта удалена сразу)",
+            ),
+            openapi.Parameter(
+                name='subscription_paid_date',
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="Дата оплаты подписки, формат DD-MM-YYYY",
+            ),
+            openapi.Parameter(
+                name='subscription_end_date',
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="Дата окончания подписки, формат DD-MM-YYYY",
+            ),
+        ],
+        responses=response_schema_dict,
+    )
     def get(self, request):
         site_id = request.GET.get('site_id')
         chat_id = request.GET.get('chat_id')
@@ -267,17 +258,24 @@ class createUser(APIView):
         subscription_end_date = request.GET.get('subscription_end_date')
         same_rec = modelUser.objects.filter(chat_id=chat_id).values('chat_id')
         if not same_rec.exists():
-            modelUser.objects.create(site_id=None, chat_id=chat_id, subscription_status='ZERO',
-                                     subscription_paid_date=None,
-                                     subscription_end_date=None)
+            modelUser.objects.create(
+                site_id=None,
+                chat_id=chat_id,
+                subscription_status='ZERO',
+                subscription_paid_date=None,
+                subscription_end_date=None,
+            )
             instance = modelUser.objects.filter(chat_id=chat_id).values()
             return Response(instance)
 
         if same_rec.exists():
-            modelUser.objects.filter(chat_id=chat_id).update(site_id=site_id, chat_id=chat_id,
-                                                             subscription_status=subscription_status,
-                                                             subscription_paid_date=subscription_paid_date,
-                                                             subscription_end_date=subscription_end_date)
+            modelUser.objects.filter(chat_id=chat_id).update(
+                site_id=site_id,
+                chat_id=chat_id,
+                subscription_status=subscription_status,
+                subscription_paid_date=subscription_paid_date,
+                subscription_end_date=subscription_end_date,
+            )
             instance = modelUser.objects.filter(chat_id=chat_id).values()
             return Response(instance)
 
@@ -293,18 +291,12 @@ class getUser(APIView):
                     "site_id": "2222",
                     "subscription_status": "FIRST",
                     "subscription_paid_date": "DD-MM-YYYY",
-                    "subscription_end_date": "DD-MM-YYYY"
+                    "subscription_end_date": "DD-MM-YYYY",
                 }
-            }
+            },
         ),
         "404": openapi.Response(
-            description="404 Response",
-            examples={
-                "application/json": {
-                    'getUser_Error': 'ID not found'
-
-                }
-            }
+            description="404 Response", examples={"application/json": {'getUser_Error': 'ID not found'}}
         ),
     }
     get_user_config = openapi.Parameter(
