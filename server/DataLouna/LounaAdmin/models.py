@@ -116,22 +116,53 @@ class modelUser(models.Model):
         (FIRST, 'Не оформил триал'),
         (SECOND, 'Триал оформлен'),
         (THIRD, 'Оформил (продлил?) подписку'),
-        (FOURTH,'Карта удалена сразу'),
+        (FOURTH, 'Карта удалена сразу'),
     ]
 
-
-    site_id = models.IntegerField(verbose_name='ID на сайте',blank=True,null=True)
-    chat_id = models.IntegerField(verbose_name='Чат ID',blank=True,null=True)
-    subscription_status = models.CharField(choices=STATUS_CHOICES,max_length=255,verbose_name='Статус подписки',null=True)
-    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки',null=True,blank=True)
-    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки',null=True,blank=True)
-
+    site_id = models.IntegerField(verbose_name='ID на сайте', blank=True, null=True)
+    chat_id = models.IntegerField(verbose_name='Чат ID', blank=True, null=True)
+    subscription_status = models.CharField(choices=STATUS_CHOICES, max_length=255, verbose_name='Статус подписки',
+                                           null=True)
+    subscription_paid_date = models.DateField(verbose_name='Дата оплаты подписки', null=True, blank=True)
+    subscription_end_date = models.DateField(verbose_name='Дата окончания подписки', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
 
+class NoviceNewsTellers(models.Model):
+    after_time = models.DurationField(verbose_name='Переодичность рассылки')
+    text = models.CharField(max_length=500, verbose_name='Текст')
+
+    class Meta:
+        verbose_name = 'Рассылка новичку'
+        verbose_name_plural = 'Рассылку новичку'
+
+
+class InactiveNewsTellers(models.Model):
+    after_time = models.DurationField(verbose_name='Переодичность рассылки')
+    text = models.CharField(max_length=500, verbose_name='Текст')
+
+    class Meta:
+        verbose_name = 'Рассылкf "спящему" клиенту'
+        verbose_name_plural = 'Рассылки "спящим" клиентам'
+
+
+class Notification(models.Model):
+    SUCCSESSFUL_PAYMENT = 'SUCCSESSFUL_PAYMENT'
+    UNSUCCESSFUL_PAYMENT = 'UNSUCCESSFUL_PAYMENT'
+    STATUS_CHOICES = [
+        (SUCCSESSFUL_PAYMENT, 'SUCCSESSFUL_PAYMENT'),
+        (UNSUCCESSFUL_PAYMENT, 'UNSUCCESSFUL_PAYMENT')
+    ]
+
+    type = models.CharField(choices=STATUS_CHOICES)
+    text = models.CharField(max_length=500)
+
+    class Meta:
+        verbose_name = 'Уведомление об оплате'
+        verbose_name_plural = 'Уведомления об оплате'
 
 @receiver(pre_delete, sender=CategoryNode)
 def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
