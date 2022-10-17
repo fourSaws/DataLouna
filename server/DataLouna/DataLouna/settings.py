@@ -79,9 +79,7 @@ WSGI_APPLICATION = "DataLouna.wsgi.application"
 
 SWAGGER_SETTINGS = {
     "apiKey": "9c08dbbdd48e6053f1229c9cd7f731705c316f47",
-    "SECURITY_DEFINITIONS": {
-        "api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}
-    },
+    "SECURITY_DEFINITIONS": {"api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}},
 }
 
 # Database
@@ -121,9 +119,8 @@ TIME_ZONE = "UTC"
 USE_L10N = False
 USE_I18N = True
 
-USE_TZ = True
-DATE_FORMAT = "d.m.Y"
-DATE_INPUT_FORMATS = (("%d.%m.%Y"),)
+USE_TZ = False
+DATETIME_INPUT_FORMATS = '%Y-%m-%d %H:%M:%S'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

@@ -50,19 +50,11 @@ class NotificationRender(APIView):
         status_second = request.POST.get("SECOND")
         status_third = request.POST.get("THIRD")
         status_fourth = request.POST.get("FOURTH")
-        status_exists = bool(
-            status_zero
-            or status_first
-            or status_second
-            or status_third
-            or status_fourth
-        )
+        status_exists = bool(status_zero or status_first or status_second or status_third or status_fourth)
         notification = request.POST.get("notification-area")
         if request.method == "POST":
             if chat_id and notification and not status_exists:
-                return Response(
-                    data={"chat-id": chat_id, "notification-area": notification}
-                )
+                return Response(data={"chat-id": chat_id, "notification-area": notification})
             if status_exists and not chat_id:
                 return Response(
                     data={
@@ -83,11 +75,7 @@ class NotificationRender(APIView):
             if not chat_id and not status_exists and not notification:
                 return Response("123")
             if chat_id and status_exists:
-                return Response(
-                    {
-                        "Notification_error": "Можно выбирать либо chat_id или status_frist"
-                    }
-                )
+                return Response({"Notification_error": "Можно выбирать либо chat_id или status_frist"})
 
         else:
             return render(request, "html/Notification_page.html")
@@ -96,17 +84,13 @@ class NotificationRender(APIView):
 class getArticle(APIView):
     permission_classes = [IsAuthenticated]
 
-    id_param_config = openapi.Parameter(
-        "id", in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING
-    )
+    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING)
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
             examples={"application/json": {"Article object": "id,title,text,photo"}},
         ),
-        "404": openapi.Response(
-            description="404 Response", examples={"getArticle_Error": "ID not found"}
-        ),
+        "404": openapi.Response(description="404 Response", examples={"getArticle_Error": "ID not found"}),
     }
 
     @swagger_auto_schema(
@@ -136,9 +120,7 @@ class getArticle(APIView):
             instance = Article.objects.filter(id=param_id).values()[0]
             return Response(instance)
         except IndexError:
-            return Response(
-                {"getArticle_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"getArticle_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class getChildren(APIView):
@@ -147,15 +129,9 @@ class getChildren(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "CategoryNode object": "id,name,parent,final,valid"
-                }
-            },
+            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
         ),
-        "400": openapi.Response(
-            description="400 Response", examples={"getChildren_Error": "ID not found"}
-        ),
+        "400": openapi.Response(description="400 Response", examples={"getChildren_Error": "ID not found"}),
     }
 
     @swagger_auto_schema(
@@ -197,11 +173,7 @@ class getNode(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "CategoryNode object": "id,name,parent,final,valid"
-                }
-            },
+            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
         ),
         "400": openapi.Response(
             description="400 Response",
@@ -229,8 +201,7 @@ class getNode(APIView):
                 required=True,
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
-            )
-
+            ),
         ],
         responses=response_schema_dict,
     )
@@ -248,9 +219,7 @@ class getNode(APIView):
             serializers = NodeSerializerArticleId(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response(
-                {"getNode_Error": "ValueError"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"getNode_Error": "ValueError"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class getArticlesByKeyWords(APIView):
@@ -299,10 +268,7 @@ class getArticlesByKeyWords(APIView):
             for word in keyword_found:
                 articles_by_keywords.append(
                     set(
-                        i["article_id"]
-                        for i in KeywordArticle.objects.filter(
-                            keywords_id=word.id
-                        ).values("article_id")
+                        i["article_id"] for i in KeywordArticle.objects.filter(keywords_id=word.id).values("article_id")
                     )
                 )
             if not articles_by_keywords:
@@ -328,11 +294,7 @@ class getArticlesByNode(APIView):
         ),
         "404": openapi.Response(
             description="404 Response",
-            examples={
-                "application/json": {
-                    "getArticlesByNode_Error": "В этой категории final!=True"
-                }
-            },
+            examples={"application/json": {"getArticlesByNode_Error": "В этой категории final!=True"}},
         ),
     }
 
@@ -358,13 +320,12 @@ class getArticlesByNode(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
             ),
-        ], responses=response_schema_dict
+        ],
+        responses=response_schema_dict,
     )
     def get(self, request):
         node_id = self.request.query_params.get("node_id")
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values("articles")[0][
-            "articles"
-        ]
+        filter_by_id = CategoryNode.objects.filter(id=node_id).values("articles")[0]["articles"]
         try:
             filter_by_id
         except IndexError:
@@ -514,7 +475,9 @@ class getUser(APIView):
                 required=True,
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
-            ), ], responses=response_schema_dict
+            ),
+        ],
+        responses=response_schema_dict,
     )
     def get(self, request):
         chat_id = self.request.query_params.get("chat_id")
@@ -522,9 +485,7 @@ class getUser(APIView):
         try:
             user[0]
         except IndexError:
-            return Response(
-                {"getUser_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"getUser_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
         return Response(user)
 
 
@@ -559,20 +520,12 @@ class onEnter(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "Пользователь существует": "True"
-                }
-            },
+            examples={"application/json": {"Пользователь существует": "True"}},
         ),
         "400": openapi.Response(
             description="400 Response",
-            examples={
-                "application/json": {
-                    "Пользователь не существует": "False"
-                }
-            },
-        )
+            examples={"application/json": {"Пользователь не существует": "False"}},
+        ),
     }
 
     @swagger_auto_schema(
@@ -603,15 +556,8 @@ class onEnter(APIView):
                             "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
-                name="subscription_paid_date",
-                required=True,
-                type=openapi.TYPE_STRING,
-                in_=openapi.IN_QUERY,
-                description="YYYY-MM-DD",
-            ),
-            openapi.Parameter(
                 name="subscription_end_date",
-                required=True,
+                required=False,
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_QUERY,
                 description="YYYY-MM-DD",
@@ -623,13 +569,13 @@ class onEnter(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
             ),
-        ], responses=response_schema_dict
+        ],
+        responses=response_schema_dict,
     )
     def get(self, request):
         chat_id = self.request.query_params.get("chat_id")
         site_id = self.request.query_params.get("site_id")
         status_ = self.request.query_params.get("status")
-        subscription_paid_date = self.request.query_params.get("subscription_paid_date")
         subscription_end_date = self.request.query_params.get("subscription_end_date")
 
         user_exists = modelUser.objects.filter(chat_id=chat_id)
@@ -637,10 +583,26 @@ class onEnter(APIView):
             user_exists.update(
                 site_id=site_id,
                 subscription_status=status_,
-                subscription_paid_date=subscription_paid_date,
-                subscription_end_date=subscription_end_date,
             )
-            return Response({"Пользователь существует": True}, status=status.HTTP_200_OK)
+            if status_ != "ZERO" and status_ != "FIRST" and subscription_end_date:
+                user_exists.update(
+                    site_id=site_id,
+                    subscription_status=status_,
+                    subscription_end_date=subscription_end_date
+                )
+                return Response({"Пользователь существует и статус подписки != ZERO или FIRST": True},
+                                status=status.HTTP_200_OK)
+            elif status_ != "ZERO" and status_ != "FIRST" and subscription_end_date is None:
+                return Response("Если статус не равен ZERO или FIRST, то нужно передавать subscription_end_date",
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user_exists.update(
+                    site_id=site_id,
+                    subscription_status=status_,
+                    subscription_end_date=None
+                )
+                return Response({f"Пользователь существует но статус подписки равен {status_}": True},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"Пользователь не существует": False}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -650,30 +612,23 @@ class subscriptionPaid(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "Запись произведина успешно": "True"
-                }
-            },
+            examples={"application/json": {"Запись произведина успешно": "True"}},
         ),
         "404": openapi.Response(
             description="404 Response",
-            examples={
-                "application/json": {
-                    "Пользователь не найден": "False"
-                }
-            },
-        )
+            examples={"application/json": {"Пользователь не найден": "False"}},
+        ),
     }
 
     @swagger_auto_schema(
-        manual_parameters=[openapi.Parameter(
-            "site_id",
-            in_=openapi.IN_QUERY,
-            description="ID на сайте",
-            required=True,
-            type=openapi.TYPE_STRING,
-        ),
+        manual_parameters=[
+            openapi.Parameter(
+                "site_id",
+                in_=openapi.IN_QUERY,
+                description="ID на сайте",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
             openapi.Parameter(
                 name="status",
                 required=True,
@@ -686,28 +641,53 @@ class subscriptionPaid(APIView):
                             "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
+                name="subscription_end_date",
+                required=False,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="YYYY-MM-DD",
+            ),
+            openapi.Parameter(
                 name="Authorization",
                 description="Authorization token",
                 required=True,
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
             ),
-        ], responses=response_schema_dict)
+        ],
+        responses=response_schema_dict,
+    )
     def get(self, request):
         site_id = self.request.query_params.get("site_id")
         status_ = self.request.query_params.get("status")
-        subscription_paid_date = self.request.query_params.get("subscription_paid_date")
         subscription_end_date = self.request.query_params.get("subscription_end_date")
 
         status_check = modelUser.objects.filter(site_id=site_id)
 
-        if status_check.exists():
+        if status_check.exists() and status_ in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
             status_check.update(
+                site_id=site_id,
                 subscription_status=status_,
-                subscription_paid_date=subscription_paid_date,
-                subscription_end_date=subscription_end_date,
             )
-            return Response("Запись произведина успешно", status=status.HTTP_200_OK)
+            if status_ != "ZERO" and status_ != "FIRST" and subscription_end_date:
+                status_check.update(
+                    site_id=site_id,
+                    subscription_status=status_,
+                    subscription_end_date=subscription_end_date
+                )
+                return Response("Запись произведина успешно", status=status.HTTP_200_OK)
+            elif status_ != "ZERO" and status_ != "FIRST" and subscription_end_date is None:
+                return Response("Если статус не равен ZERO, то нужно передавать subscription_end_date",
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                status_check.update(
+                    site_id=site_id,
+                    subscription_status=status_,
+                    subscription_end_date=None
+                )
+                return Response(f"Статус равен {status_}")
+        elif status_ not in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
+            return Response("Неверный статус", status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Пользователь не найден", status=status.HTTP_404_NOT_FOUND)
 
@@ -718,38 +698,27 @@ class updateStatus(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={
-                "application/json": {
-                    "Статус обновлен": "True"
-                }
-            },
+            examples={"application/json": {"Статус обновлен": "True"}},
         ),
         "400": openapi.Response(
             description="400 Response",
-            examples={
-                "application/json": {
-                    "Неверный статус": "False"
-                }
-            },
+            examples={"application/json": {"Неверный статус": "False"}},
         ),
         "404": openapi.Response(
             description="400 Response",
-            examples={
-                "application/json": {
-                    "Пользователь не найден": "False"
-                }
-            },
-        )
+            examples={"application/json": {"Пользователь не найден": "False"}},
+        ),
     }
 
     @swagger_auto_schema(
-        manual_parameters=[openapi.Parameter(
-            "site_id",
-            in_=openapi.IN_QUERY,
-            description="ID на сайте",
-            required=True,
-            type=openapi.TYPE_STRING,
-        ),
+        manual_parameters=[
+            openapi.Parameter(
+                "site_id",
+                in_=openapi.IN_QUERY,
+                description="ID на сайте",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
             openapi.Parameter(
                 name="new_status",
                 required=True,
@@ -762,26 +731,49 @@ class updateStatus(APIView):
                             "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
+                name="subscription_end_date",
+                required=False,
+                type=openapi.TYPE_STRING,
+                in_=openapi.IN_QUERY,
+                description="YYYY-MM-DD",
+            ),
+            openapi.Parameter(
                 name="Authorization",
                 description="Authorization token",
                 required=True,
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_HEADER,
             ),
-        ],responses=response_schema_dict)
+        ],
+        responses=response_schema_dict,
+    )
     def get(self, request):
         site_id = self.request.query_params.get("site_id")
         new_status = self.request.query_params.get("new_status")
+        subscription_end_date = self.request.query_params.get("subscription_end_date")
         user_check = modelUser.objects.filter(site_id=site_id)
-        if user_check.exists() and new_status in (
-                "ZERO",
-                "FIRST",
-                "SECOND",
-                "THIRD",
-                "FOURTH",
-        ):
-            modelUser.objects.filter(site_id=site_id).update(subscription_status=new_status)
-            return Response("Статус обновлен", status=status.HTTP_200_OK)
+        if user_check.exists() and new_status in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
+            user_check.update(
+                site_id=site_id,
+                subscription_status=new_status,
+            )
+            if new_status != "ZERO" and new_status != "FIRST" and subscription_end_date:
+                user_check.update(
+                    site_id=site_id,
+                    subscription_status=new_status,
+                    subscription_end_date=subscription_end_date
+                )
+                return Response("Статус обновлен", status=status.HTTP_200_OK)
+            elif new_status != "ZERO" and new_status != "FIRST" and subscription_end_date is None:
+                return Response("Если статус не равен ZERO или FIRST, то нужно передавать subscription_end_date",
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user_check.update(
+                    site_id=site_id,
+                    subscription_status=new_status,
+                    subscription_end_date=None
+                )
+                return Response(f"Статус обновлен на {new_status}", status=status.HTTP_200_OK)
         elif new_status not in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
             return Response("Неверный статус", status=status.HTTP_400_BAD_REQUEST)
         else:

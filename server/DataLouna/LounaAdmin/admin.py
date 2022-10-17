@@ -41,7 +41,6 @@ class UserAdmin(admin.ModelAdmin):
         "site_id",
         "chat_id",
         "subscription_status",
-        "subscription_paid_date",
         "subscription_end_date",
     ]
 

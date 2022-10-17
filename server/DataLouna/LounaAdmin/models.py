@@ -127,12 +127,7 @@ class modelUser(models.Model):
         verbose_name="Статус подписки",
         null=True,
     )
-    subscription_paid_date = models.DateField(
-        verbose_name="Дата оплаты подписки", null=True, blank=True
-    )
-    subscription_end_date = models.DateField(
-        verbose_name="Дата окончания подписки", null=True, blank=True
-    )
+    subscription_end_date = models.DateTimeField(verbose_name="Дата окончания подписки", null=True, blank=True)
 
     class Meta:
         verbose_name = "Пользователь"
