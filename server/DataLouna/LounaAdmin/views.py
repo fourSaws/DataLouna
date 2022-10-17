@@ -13,7 +13,7 @@ from .models import (
     CategoryNode,
     Keywords,
     KeywordArticle,
-    modelUser,
+    User,
     NoviceNewsTellers,
     InactiveNewsTellers,
 )
@@ -407,25 +407,25 @@ class createUser(APIView):
         chat_id = request.GET.get("chat_id")
         subscription_status = request.GET.get("subscription_status")
         subscription_end_date = request.GET.get("subscription_end_date")
-        same_rec = modelUser.objects.filter(chat_id=chat_id).values("chat_id")
+        same_rec = User.objects.filter(chat_id=chat_id).values("chat_id")
         if not same_rec.exists():
-            modelUser.objects.create(
+            User.objects.create(
                 site_id=None,
                 chat_id=chat_id,
                 subscription_status="ZERO",
                 subscription_end_date=None,
             )
-            instance = modelUser.objects.filter(chat_id=chat_id).values()
+            instance = User.objects.filter(chat_id=chat_id).values()
             return Response(instance)
 
         if same_rec.exists():
-            modelUser.objects.filter(chat_id=chat_id).update(
+            User.objects.filter(chat_id=chat_id).update(
                 site_id=site_id,
                 chat_id=chat_id,
                 subscription_status=subscription_status,
                 subscription_end_date=subscription_end_date,
             )
-            instance = modelUser.objects.filter(chat_id=chat_id).values()
+            instance = User.objects.filter(chat_id=chat_id).values()
             return Response(instance)
 
 
@@ -470,7 +470,7 @@ class getUser(APIView):
     )
     def get(self, request):
         chat_id = self.request.query_params.get("chat_id")
-        user = modelUser.objects.filter(chat_id=chat_id).values()
+        user = User.objects.filter(chat_id=chat_id).values()
         try:
             user[0]
         except IndexError:
@@ -483,17 +483,18 @@ class onEnter(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={"application/json": {"The user exists": "True",
-                                           "The user exists but the subscription status is": "True"}},
+            examples={"application/json": {"Success": " The user exists",
+                                           "Success ZERO or FIRST": " The user exists but the subscription status is ZERO or FIRST"}},
         ),
         "400": openapi.Response(
             description="400 Response",
-            examples={"application/json": {"If the status is not equal to ZERO or FIRST, then you need to pass "
-                                           "subscription_end_date"}}
+            examples={"application/json": {
+                "Bad request": "If the status is not equal to ZERO or FIRST, then you need to pass "
+                               "subscription_end_date"}}
         ),
         "404": openapi.Response(
             description="400 Response",
-            examples={"application/json": {"User does not exist": "False"}},
+            examples={"application/json": {"Error": "User does not exist"}},
         ),
     }
 
@@ -547,7 +548,7 @@ class onEnter(APIView):
         status_ = self.request.query_params.get("status")
         subscription_end_date = self.request.query_params.get("subscription_end_date")
 
-        user_exists = modelUser.objects.filter(chat_id=chat_id)
+        user_exists = User.objects.filter(chat_id=chat_id)
         if user_exists.exists():
             user_exists.update(
                 site_id=site_id,
@@ -559,11 +560,11 @@ class onEnter(APIView):
                     subscription_status=status_,
                     subscription_end_date=subscription_end_date
                 )
-                return Response({"The user exists": True},
+                return Response({"Success": "The user exists"},
                                 status=status.HTTP_200_OK)
             elif status_ != "ZERO" and status_ != "FIRST" and subscription_end_date is None:
-                return Response("If the status is not equal to ZERO or FIRST, then you need to pass "
-                                "subscription_end_date",
+                return Response({"Bad request": "If the status is not equal to ZERO or FIRST, then you need to pass "
+                                                "subscription_end_date"},
                                 status=status.HTTP_400_BAD_REQUEST)
             else:
                 user_exists.update(
@@ -571,10 +572,10 @@ class onEnter(APIView):
                     subscription_status=status_,
                     subscription_end_date=None
                 )
-                return Response({f"The user exists but the subscription status is {status_}": True},
+                return Response({"Success ZERO or FIRST": f"The user exists but the subscription status is {status_}"},
                                 status=status.HTTP_200_OK)
         else:
-            return Response({"User does not exist": False}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"Error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class subscriptionPaid(APIView):
@@ -582,18 +583,18 @@ class subscriptionPaid(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={"application/json": {"Write completed successfully": "True",
-                                           "Status equals ZERO or FIRST": "True"}},
+            examples={"application/json": {"Success": "Write completed successfully",
+                                           "Success ZERO or FIRST": "Status equals ZERO or FIRST"}},
         ),
         "400": openapi.Response(
             description="400 Response",
             examples={"applications/json": {
-                "If the status is not equal to ZERO, then you need to pass subscription_end_date": "False",
-                "Invalid status": "False"}}
+                "Bad request": "If the status is not equal to ZERO, then you need to pass subscription_end_date",
+                "Bad request status": "Invalid status"}}
         ),
         "404": openapi.Response(
             description="404 Response",
-            examples={"application/json": {"User is not found": "False"}},
+            examples={"application/json": {"Error": "User is not found"}},
         ),
     }
 
@@ -639,7 +640,7 @@ class subscriptionPaid(APIView):
         status_ = self.request.query_params.get("status")
         subscription_end_date = self.request.query_params.get("subscription_end_date")
 
-        status_check = modelUser.objects.filter(site_id=site_id)
+        status_check = User.objects.filter(site_id=site_id)
 
         if status_check.exists() and status_ in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
             status_check.update(
@@ -652,21 +653,22 @@ class subscriptionPaid(APIView):
                     subscription_status=status_,
                     subscription_end_date=subscription_end_date
                 )
-                return Response("Write completed successfully", status=status.HTTP_200_OK)
+                return Response({"Success": "Write completed successfully"}, status=status.HTTP_200_OK)
             elif status_ != "ZERO" and status_ != "FIRST" and subscription_end_date is None:
-                return Response("If the status is not equal to ZERO, then you need to pass subscription_end_date",
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"Bad request": "If the status is not equal to ZERO, then you need to pass subscription_end_date"},
+                    status=status.HTTP_400_BAD_REQUEST)
             else:
                 status_check.update(
                     site_id=site_id,
                     subscription_status=status_,
                     subscription_end_date=None
                 )
-                return Response(f"Status equals {status_}", status=status.HTTP_200_OK)
+                return Response({"Success ZERO or FIRST": f"Status equals {status_}"}, status=status.HTTP_200_OK)
         elif status_ not in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
-            return Response("Invalid status", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Bad request": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("User is not found", status=status.HTTP_404_NOT_FOUND)
+            return Response({"Error": "User is not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class updateStatus(APIView):
@@ -675,19 +677,19 @@ class updateStatus(APIView):
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={"application/json": {"Status updated": "True",
-                                           "Status updated to ZERO or STATUS": "True"}},
+            examples={"application/json": {"Success": "Status updated",
+                                           "Success ZERO or FIRST": "Status updated to ZERO or STATUS"}},
         ),
         "400": openapi.Response(
             description="400 Response",
-            examples={"application/json": {"Invalid status": "False",
-                                           "If the status is not equal to ZERO or FIRST, then you need to pass "
-                                           "subscription_end_date": "False"}},
+            examples={"application/json": {"Bad request": "Invalid status",
+                                           "Bad request status": "If the status is not equal to ZERO or FIRST, then you need to pass"
+                                           "subscription_end_date"}},
         ),
 
         "404": openapi.Response(
             description="400 Response",
-            examples={"application/json": {"User is not found": "False"}},
+            examples={"application/json": {"Error": "User is not found"}},
         ),
     }
 
@@ -732,7 +734,7 @@ class updateStatus(APIView):
         site_id = self.request.query_params.get("site_id")
         new_status = self.request.query_params.get("new_status")
         subscription_end_date = self.request.query_params.get("subscription_end_date")
-        user_check = modelUser.objects.filter(site_id=site_id)
+        user_check = User.objects.filter(site_id=site_id)
         if user_check.exists() and new_status in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
             user_check.update(
                 site_id=site_id,
@@ -744,10 +746,11 @@ class updateStatus(APIView):
                     subscription_status=new_status,
                     subscription_end_date=subscription_end_date
                 )
-                return Response("Status updated", status=status.HTTP_200_OK)
+                return Response({"Success": "Status updated"}, status=status.HTTP_200_OK)
             elif new_status != "ZERO" and new_status != "FIRST" and subscription_end_date is None:
                 return Response(
-                    "If the status is not equal to ZERO or FIRST, then you need to pass subscription_end_date",
+                    {
+                        "Bad request": "If the status is not equal to ZERO or FIRST, then you need to pass subscription_end_date"},
                     status=status.HTTP_400_BAD_REQUEST)
             else:
                 user_check.update(
@@ -755,8 +758,8 @@ class updateStatus(APIView):
                     subscription_status=new_status,
                     subscription_end_date=None
                 )
-                return Response(f"Status updated to {new_status}", status=status.HTTP_200_OK)
+                return Response({"Success ZERO or FIRST": f"Status updated to {new_status}"}, status=status.HTTP_200_OK)
         elif new_status not in ("ZERO", "FIRST", "SECOND", "THIRD", "FOURTH"):
-            return Response("Invalid status", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Bad request": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("User is not found", status=status.HTTP_404_NOT_FOUND)
+            return Response({"Error": "User is not found"}, status=status.HTTP_404_NOT_FOUND)

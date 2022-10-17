@@ -6,7 +6,7 @@ from .models import (
     Keywords,
     CategoryNode,
     KeywordArticle,
-    modelUser,
+    User,
     NoviceNewsTellers,
     InactiveNewsTellers,
     Notification,
@@ -69,7 +69,7 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
 admin.site.register(CategoryNode, CategoryNodeAdmin)
 admin.site.register(KeywordArticle, KeywordsArticleAdmin)
-admin.site.register(modelUser, UserAdmin)
+admin.site.register(User, UserAdmin)
 admin.site.register(NoviceNewsTellers, NoviceNewsTellersAdmin)
 admin.site.register(InactiveNewsTellers, InactiveNewsTellersAdmin)
 admin.site.register(Notification, NotificationAdmin)

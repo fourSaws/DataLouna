@@ -105,7 +105,7 @@ class CategoryNode(models.Model):
         verbose_name_plural = "Категории"
 
 
-class modelUser(models.Model):
+class User(models.Model):
     ZERO = "ZERO"
     FIRST = "FIRST"
     SECOND = "SECOND"

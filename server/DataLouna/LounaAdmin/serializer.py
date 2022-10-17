@@ -49,5 +49,5 @@ class UserSerializer(serializers.ModelSerializer):
     subscription_end_date = serializers.DateField()
 
     class Meta:
-        model = modelUser
+        model = User
         fields = "__all__"

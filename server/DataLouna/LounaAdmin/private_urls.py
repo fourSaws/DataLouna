@@ -10,9 +10,6 @@ from .views import (
     getArticlesByNode,
     createUser,
     getUser,
-    getNoviceNewsTellers,
-    NotificationRender,
-    onEnter,
 )
 
 urlpatterns = [
@@ -24,6 +21,4 @@ urlpatterns = [
     path("api/getArticlesByNode", getArticlesByNode.as_view()),
     path("api/createUser", createUser.as_view()),
     path("api/getUser", getUser.as_view()),
-    path("api/getNoviceNewsTellers", getNoviceNewsTellers.as_view()),
-    path("notifications", NotificationRender.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
