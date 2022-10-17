@@ -5,8 +5,9 @@ from telebot.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
+    InlineQuery
 )
-from mytoken import token
+from variables import *
 from api import *
 
 bot = TeleBot(token)
@@ -124,6 +125,16 @@ def categoryCallback(call: CallbackQuery):
             parentId = node.parentId
             messageText = f'{node.name} → {messageText}'
         messageText = messageText + "\n\nСтатьи:"
+
+        if len(cbdata) == 5 and int(cbdata[-1]):
+            bot.delete_message(call.message.chat.id, call.message.id)
+            bot.send_message(
+                chat_id=call.message.chat.id,
+                text=messageText,
+                reply_markup=markup,
+                parse_mode="Markdown",
+            )
+            return
         bot.edit_message_text(
             chat_id=call.message.chat.id,
             message_id=call.message.id,
@@ -155,6 +166,7 @@ def categoryCallback(call: CallbackQuery):
         node = getNode(int(cbdata[2]))
         parentId = node.parentId
         messageText = node.name
+        node = getNode(parentId)
         if parentId != None:
             markup.add(
                 InlineKeyboardButton(
@@ -208,7 +220,9 @@ def articleCallback(call: CallbackQuery):
             + "\0"  # type and final
             + str(node.id)
             + "\0"  # id
-            + str(node.parentId),
+            + str(node.parentId)
+            + "\0"  # delete
+            + str(int(True)),
         )
     )  # parentId))
     messageText = f'*{article.title}*\n\n{article.text}'
@@ -235,5 +249,34 @@ ________________________________________________________________________________
 Keyboard buttons
 ________________________________________________________________________________________________________________________
 '''
+
+'''
+________________________________________________________________________________________________________________________
+Inline mode
+________________________________________________________________________________________________________________________
+'''
+
+@bot.inline_handler(func=lambda query: len(query.query) > 0)
+def inlineMode(data: InlineQuery):
+    print(data)
+    print(data.query)
+    articles = getArticlesByKeyWord(data.query)
+    print(articles)
+    if articles == None:
+        return
+    inlineQuery = []
+    cnt = 1
+    for article in articles:
+        inlineQuery.append(types.InlineQueryResultArticle(
+            id=str(cnt),
+            title=article.title,
+            input_message_content=articleToMessage(article),
+            description=article.text[:30] + "...",
+        )
+        )
+        cnt += 1
+    bot.answer_inline_query(data.id, inlineQuery)
+
+
 
 bot.infinity_polling()
