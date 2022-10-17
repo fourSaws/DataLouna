@@ -7,83 +7,83 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('LounaAdmin', '0005_keywords_alter_article_text'),
+        ("LounaAdmin", "0005_keywords_alter_article_text"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='article',
-            options={'verbose_name': 'Статьи', 'verbose_name_plural': 'Статьи'},
+            name="article",
+            options={"verbose_name": "Статьи", "verbose_name_plural": "Статьи"},
         ),
         migrations.AlterModelOptions(
-            name='keywords',
+            name="keywords",
             options={
-                'verbose_name': 'Ключевые слова',
-                'verbose_name_plural': 'Ключевые слова',
+                "verbose_name": "Ключевые слова",
+                "verbose_name_plural": "Ключевые слова",
             },
         ),
         migrations.AlterField(
-            model_name='article',
-            name='photo',
-            field=models.ImageField(blank=True, upload_to='', verbose_name='Фото'),
+            model_name="article",
+            name="photo",
+            field=models.ImageField(blank=True, upload_to="", verbose_name="Фото"),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='text',
-            field=models.TextField(verbose_name='Текст статьи'),
+            model_name="article",
+            name="text",
+            field=models.TextField(verbose_name="Текст статьи"),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='title',
-            field=models.CharField(max_length=255, verbose_name='Короткое описание'),
+            model_name="article",
+            name="title",
+            field=models.CharField(max_length=255, verbose_name="Короткое описание"),
         ),
         migrations.AlterField(
-            model_name='keywords',
-            name='text',
-            field=models.CharField(max_length=64, verbose_name='Ключевые слова'),
+            model_name="keywords",
+            name="text",
+            field=models.CharField(max_length=64, verbose_name="Ключевые слова"),
         ),
         migrations.CreateModel(
-            name='CategoryNode',
+            name="CategoryNode",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name='ID',
+                        verbose_name="ID",
                     ),
                 ),
-                ('name', models.CharField(max_length=255)),
-                ('valid', models.BooleanField()),
+                ("name", models.CharField(max_length=255)),
+                ("valid", models.BooleanField()),
                 (
-                    'articles',
+                    "articles",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name='Статьи',
-                        to='LounaAdmin.article',
-                    ),
-                ),
-                (
-                    'children',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name='Ребенок',
-                        to='LounaAdmin.categorynode',
+                        related_name="Статьи",
+                        to="LounaAdmin.article",
                     ),
                 ),
                 (
-                    'parent',
+                    "children",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name='Родитель',
-                        to='LounaAdmin.categorynode',
+                        related_name="Ребенок",
+                        to="LounaAdmin.categorynode",
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="Родитель",
+                        to="LounaAdmin.categorynode",
                     ),
                 ),
             ],
             options={
-                'verbose_name': 'Узел',
-                'verbose_name_plural': 'Узел',
+                "verbose_name": "Узел",
+                "verbose_name_plural": "Узел",
             },
         ),
     ]

@@ -8,24 +8,24 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('LounaAdmin', '0002_delete_article'),
+        ("LounaAdmin", "0002_delete_article"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Article',
+            name="Article",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name='ID',
+                        verbose_name="ID",
                     ),
                 ),
-                ('title', models.CharField(max_length=64, null=True)),
-                ('text', models.TextField(null=True)),
+                ("title", models.CharField(max_length=64, null=True)),
+                ("text", models.TextField(null=True)),
             ],
         ),
     ]

@@ -5,13 +5,13 @@ from .models import *
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = "__all__"
 
 
 class NodeSerializerUnpack(serializers.ModelSerializer):
     class Meta:
         model = CategoryNode
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -19,27 +19,27 @@ class NodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CategoryNode
-        fields = ('id', 'name', 'parent', 'articles', 'final')
+        fields = ("id", "name", "parent", "articles", "final")
 
 
 class NodeSerializerArticleId(serializers.ModelSerializer):
     class Meta:
         model = CategoryNode
-        fields = ('id', 'name', 'parent', 'final', 'valid')
+        fields = ("id", "name", "parent", "final", "valid")
 
 
 class UserSerializer(serializers.ModelSerializer):
-    ZERO = 'ZERO'
-    FIRST = 'FIRST'
-    SECOND = 'SECOND'
-    THIRD = 'THIRD'
-    FOURTH = 'FOURTH'
+    ZERO = "ZERO"
+    FIRST = "FIRST"
+    SECOND = "SECOND"
+    THIRD = "THIRD"
+    FOURTH = "FOURTH"
     STATUS_CHOICES = [
-        (ZERO, 'Нет аккаунта на сайте'),
-        (FIRST, 'Не оформил триал'),
-        (SECOND, 'Триал оформлен'),
-        (THIRD, 'Оформил (продлил?) подписку'),
-        (FOURTH, 'Карта удалена сразу'),
+        (ZERO, "Нет аккаунта на сайте"),
+        (FIRST, "Не оформил триал"),
+        (SECOND, "Триал оформлен"),
+        (THIRD, "Оформил (продлил?) подписку"),
+        (FOURTH, "Карта удалена сразу"),
     ]
 
     site_id = serializers.IntegerField()
@@ -49,5 +49,5 @@ class UserSerializer(serializers.ModelSerializer):
     subscription_end_date = serializers.DateField()
 
     class Meta:
-        model = modelUser
-        fields = '__all__'
+        model = User
+        fields = "__all__"

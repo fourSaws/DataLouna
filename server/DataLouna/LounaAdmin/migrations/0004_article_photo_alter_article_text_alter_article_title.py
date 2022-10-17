@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('LounaAdmin', '0003_initial'),
+        ("LounaAdmin", "0003_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='article',
-            name='photo',
-            field=models.ImageField(blank=True, upload_to=''),
+            model_name="article",
+            name="photo",
+            field=models.ImageField(blank=True, upload_to=""),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='text',
+            model_name="article",
+            name="text",
             field=models.TextField(max_length=255),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='title',
+            model_name="article",
+            name="title",
             field=models.CharField(max_length=255),
         ),
     ]
