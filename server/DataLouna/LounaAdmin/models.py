@@ -137,6 +137,32 @@ class modelUser(models.Model):
         return f"{self.chat_id}"
 
 
+@receiver(pre_delete, sender=CategoryNode)
+def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
+    instance.parent.save(deleted_child=instance)
+
+
+@receiver(m2m_changed, sender=CategoryNode.articles.through)
+def children_post_save(instance: CategoryNode, action, *args, **kwargs):
+    print(f"m2m_changed:{instance}")
+    if action != "post_add" and action != "post_remove":
+        return None
+    has_kids = False
+    for p in CategoryNode.objects.filter(parent=instance.id):
+        if p.valid:
+            has_kids = True
+            break
+
+    has_articles = bool(instance.articles.all())
+    instance.valid = has_kids != has_articles
+    instance.final = has_articles
+    instance.save(super=True)
+
+    if instance.parent:
+        instance.parent.save()
+    print(f"m2m_changed:{has_kids=},{has_articles=}")
+    return None
+
 class NoviceNewsTellers(models.Model):
     after_time = models.DurationField(verbose_name="Переодичность рассылки")
     text = models.CharField(max_length=500, verbose_name="Текст")
@@ -179,29 +205,3 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.type}"
 
-
-@receiver(pre_delete, sender=CategoryNode)
-def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
-    instance.parent.save(deleted_child=instance)
-
-
-@receiver(m2m_changed, sender=CategoryNode.articles.through)
-def children_post_save(instance: CategoryNode, action, *args, **kwargs):
-    print(f"m2m_changed:{instance}")
-    if action != "post_add" and action != "post_remove":
-        return None
-    has_kids = False
-    for p in CategoryNode.objects.filter(parent=instance.id):
-        if p.valid:
-            has_kids = True
-            break
-
-    has_articles = bool(instance.articles.all())
-    instance.valid = has_kids != has_articles
-    instance.final = has_articles
-    instance.save(super=True)
-
-    if instance.parent:
-        instance.parent.save()
-    print(f"m2m_changed:{has_kids=},{has_articles=}")
-    return None
