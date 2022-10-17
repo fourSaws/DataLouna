@@ -16,6 +16,7 @@ from .models import (
     User,
     NoviceNewsTellers,
     InactiveNewsTellers,
+    Notification
 )
 from .serializer import (
     NodeSerializer,
@@ -684,7 +685,7 @@ class updateStatus(APIView):
             description="400 Response",
             examples={"application/json": {"Bad request": "Invalid status",
                                            "Bad request status": "If the status is not equal to ZERO or FIRST, then you need to pass"
-                                           "subscription_end_date"}},
+                                                                 "subscription_end_date"}},
         ),
 
         "404": openapi.Response(
@@ -763,3 +764,42 @@ class updateStatus(APIView):
             return Response({"Bad request": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"Error": "User is not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class getNoviceNewsTellers(APIView):
+    def get(self, request):
+        id = self.request.query_params.get('id')
+        novice_news_tellers = NoviceNewsTellers.objects.filter(id=id)
+        if novice_news_tellers.exists():
+            if id:
+                return Response(novice_news_tellers.values(), status=status.HTTP_200_OK)
+            else:
+                return Response(NoviceNewsTellers.objects.all().values(), status=status.HTTP_200_OK)
+        else:
+            return Response({"Error": "ID does not exists"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class getInactiveNewsTellers(APIView):
+    def get(self, request):
+        id = self.request.query_params.get('id')
+        inactive_news_tellers = InactiveNewsTellers.objects.filter(id=id)
+        if inactive_news_tellers.exists():
+            if id:
+                return Response(inactive_news_tellers.values(), status=status.HTTP_200_OK)
+            else:
+                return Response(InactiveNewsTellers.objects.all().values(), status=status.HTTP_200_OK)
+        else:
+            return Response({"Error": "ID does not exists"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class getNotification(APIView):
+    def get(self, request):
+        id = self.request.query_params.get('id')
+        notification = Notification.objects.filter(id=id)
+        if notification.exists():
+            if id:
+                return Response(notification.values(), status=status.HTTP_200_OK)
+            else:
+                return Response(Notification.objects.all().values())
+        else:
+            return Response({"Error": "ID does not exists"}, status=status.HTTP_404_NOT_FOUND)
