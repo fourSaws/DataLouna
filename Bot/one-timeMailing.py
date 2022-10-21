@@ -11,7 +11,13 @@ from telebot.apihelper import ApiTelegramException
 from urllib.request import urlopen
 
 
-
+"""
+title - заголовок рассылки
+text - текст рассылки
+users - массив chat_id пользователей
+mediaLinks - ссылки на файлы (разрешены файлы только одного типа)
+mediaType - тип файлов (1 - картинка, 2 - аудио, 3 - видео)
+"""
 def one_timeMailing(title, text, users: [int], mediaLinks: [str] = None, mediaType: int = 0):
     bot = TeleBot(token)
     # if users == None:
