@@ -27,7 +27,7 @@ def one_timeMailing(title, text, users: [int], mediaLinks: [str] = None, mediaTy
     if len(users) == 0:
         return
     if mediaLinks:
-        if text == None and title == None:
+        if text and title:
             return
         message = f'*{title}*\n\n{text}'
         for user in users:
