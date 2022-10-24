@@ -18,7 +18,9 @@ users - массив chat_id пользователей
 mediaLinks - ссылки на файлы (разрешены файлы только одного типа)
 mediaType - тип файлов (1 - картинка, 2 - аудио, 3 - видео)
 """
-def one_timeMailing(title:str, text:str, users: list[int], mediaLinks: list[str] = None, mediaType: int = 0):
+
+
+def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[str] = None, mediaType: int = 0):
     bot = TeleBot(token)
     # if users == None:
     #     users = bot.
@@ -49,44 +51,49 @@ def one_timeMailing(title:str, text:str, users: list[int], mediaLinks: list[str]
     if len(mediaLinks) > 10:
         return
 
-
     message = f'*{title}*\n\n{text}'
     if text == None and title == None:
         message = None
 
     if len(mediaLinks) == 1:
-        if mediaType == 1: #img
+        if mediaType == 1:  # img
             if message == None:
-                for user in users: bot.send_photo(user, media[0])
+                for user in users:
+                    bot.send_photo(user, media[0])
             else:
-                for user in users: bot.send_photo(user, media[0], caption=message, parse_mode="Markdown")
+                for user in users:
+                    bot.send_photo(user, media[0], caption=message, parse_mode="Markdown")
         elif mediaType == 2:  # audio
             if message == None:
-                for user in users: bot.send_audio(user, media[0])
+                for user in users:
+                    bot.send_audio(user, media[0])
             else:
-                for user in users: bot.send_audio(user, media[0], caption=message, parse_mode="Markdown")
+                for user in users:
+                    bot.send_audio(user, media[0], caption=message, parse_mode="Markdown")
         elif mediaType == 3:  # video
             if message == None:
-                for user in users: bot.send_video(user, media[0])
+                for user in users:
+                    bot.send_video(user, media[0])
             else:
-                for user in users: bot.send_video(user, media[0], caption=message, parse_mode="Markdown")
+                for user in users:
+                    bot.send_video(user, media[0], caption=message, parse_mode="Markdown")
         return
 
-    if mediaType == 1: #img
+    if mediaType == 1:  # img
         for imgPath in mediaLinks[0:-1]:
             media.append(InputMediaPhoto(imgPath))
         if message == None:
             media.append(InputMediaPhoto(mediaLinks[-1]))
         else:
             media.append(InputMediaPhoto(mediaLinks[-1], caption=message, parse_mode="Markdown"))
-    elif mediaType == 2: #audio
+    elif mediaType == 2:  # audio
         for imgPath in mediaLinks[0:-1]:
             media.append(InputMediaAudio(imgPath))
         if message == None:
             media.append(InputMediaAudio(mediaLinks[-1]))
         else:
             media.append(InputMediaAudio(mediaLinks[-1], caption=message, parse_mode="Markdown"))
-    elif mediaType == 3: #video
+    elif mediaType == 3:  # video
         for imgPath in mediaLinks[0:-1]:
             media.append(InputMediaVideo(imgPath))
         if message == None:
@@ -102,4 +109,3 @@ def one_timeMailing(title:str, text:str, users: list[int], mediaLinks: list[str]
     return
     # bot.send_media_group(chat_id=986732600, media=media)
     # return
-

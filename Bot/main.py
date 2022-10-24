@@ -5,7 +5,7 @@ from telebot.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
-    InlineQuery
+    InlineQuery,
 )
 from variables import *
 from api import *
@@ -256,6 +256,7 @@ Inline mode
 ________________________________________________________________________________________________________________________
 '''
 
+
 @bot.inline_handler(func=lambda query: len(query.query) > 0)
 def inlineMode(data: InlineQuery):
     print(data)
@@ -267,16 +268,16 @@ def inlineMode(data: InlineQuery):
     inlineQuery = []
     cnt = 1
     for article in articles:
-        inlineQuery.append(types.InlineQueryResultArticle(
-            id=str(cnt),
-            title=article.title,
-            input_message_content=articleToMessage(article),
-            description=article.text[:30] + "...",
-        )
+        inlineQuery.append(
+            types.InlineQueryResultArticle(
+                id=str(cnt),
+                title=article.title,
+                input_message_content=articleToMessage(article),
+                description=article.text[:30] + "...",
+            )
         )
         cnt += 1
     bot.answer_inline_query(data.id, inlineQuery)
-
 
 
 bot.infinity_polling()

@@ -9,10 +9,7 @@ import telebot.types
 from dataTypes import *
 from variables import *
 
-from telebot.types import (
-    InputTextMessageContent,
-    InputMediaPhoto
-)
+from telebot.types import InputTextMessageContent, InputMediaPhoto
 
 # apiUrl = localServerPath + "/api"
 localServerPath = serverPath
