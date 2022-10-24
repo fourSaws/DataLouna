@@ -163,6 +163,7 @@ def children_post_save(instance: CategoryNode, action, *args, **kwargs):
     print(f"m2m_changed:{has_kids=},{has_articles=}")
     return None
 
+
 class NoviceNewsTellers(models.Model):
     after_time = models.DurationField(verbose_name="Переодичность рассылки")
     text = models.CharField(max_length=500, verbose_name="Текст")
@@ -204,4 +205,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.type}"
-
