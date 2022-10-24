@@ -1,0 +1,41 @@
+#chat-id-id{
+    width: 200px;
+    height: 30px;
+}
+#status-id{
+     width: 300px;
+     height: 30px;
+}
+#Notification-area-id{
+    width: 400px;
+    height: 200px;
+}
+
+#but-submit{
+    font-size: 20px ;
+}
+#bold-text{
+    background:none;
+    border:none;
+    cursor: pointer;
+}
+#italic-text{
+    background:none;
+    border:none;
+    cursor: pointer;
+}
+#url-text{
+    background:none;
+    border:none;
+    cursor: pointer;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

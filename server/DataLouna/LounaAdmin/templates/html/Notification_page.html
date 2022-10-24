@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'Notifications-styles.css' %}">
+    <title>Страница рассылок</title>
+</head>
+<body>
+<form method="post" name="notification-form" onsubmit="return validateForm()">
+    {% csrf_token %}
+    <label for="chat-id">Chat_id пользователя</label><br>
+    <input type="number" name="chat-id" id="chat-id-id" placeholder="chat id"><br>
+    <label for="status">Выбор статуса</label><br>
+    <div class="status">
+      <input type="checkbox" id="ZERO" name="ZERO" value="Нет аккаунта на сайте">
+      <label for="ZERO">Нет аккаунта на сайте</label>
+    </div>
+    <div class="status">
+      <input type="checkbox" id="FIRST" name="FIRST" value="Не оформил триал">
+      <label for="FIRST">Не оформил триал</label>
+    </div>
+    <div class="status">
+        <input type="checkbox" id="SECOND" name="SECOND" value="Триал оформлен">
+        <label for="SECOND">Триал оформлен</label>
+    </div>
+    <div class="status">
+        <input type="checkbox" id="THIRD" name="THIRD" value="Оформил (продлил?) подписку">
+        <label for="THIRD">Оформил (продлил?) подписку</label>
+    </div>
+    <div class="status">
+        <input type="checkbox" id="FOURTH" name="FOURTH" value="Карта удалена сразу">
+        <label for="FOURTH">Карта удалена сразу</label>
+    </div>
+    <label for="Notification-area-id" id="Notification-label">Поле ввода уведомления</label><br>
+    <textarea name="notification-area" required id="Notification-area-id"></textarea><br>
+    <button type="submit" id="but-submit">Отправить рассылку</button>
+    <button type="button" id="bold-text">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-type-bold"
+             viewBox="0 0 16 16">
+            <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 0 0 1.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.673zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.907z"/>
+        </svg>
+    </button>
+    <button type="button" id="italic-text">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-type-italic"
+             viewBox="0 0 16 16">
+            <path d="M7.991 11.674 9.53 4.455c.123-.595.246-.71 1.347-.807l.11-.52H7.211l-.11.52c1.06.096 1.128.212 1.005.807L6.57 11.674c-.123.595-.246.71-1.346.806l-.11.52h3.774l.11-.52c-1.06-.095-1.129-.211-1.006-.806z"/>
+        </svg>
+
+    </button>
+    <button type="button" id="url-text">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-link"
+             viewBox="0 0 16 16">
+            <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
+            <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"/>
+        </svg>
+    </button>
+
+</form>
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script>
+    $('#bold-text').on('click', function () {
+        var cursorPos = $('#Notification-area-id').prop('selectionStart');
+        var v = $('#Notification-area-id').val();
+        var textBefore = v.substring(0, cursorPos);
+        var textAfter = v.substring(cursorPos, v.length);
+        $('#Notification-area-id').val(textBefore + "*bold text*" + textAfter);
+    });
+    $('#italic-text').on('click', function () {
+        var cursorPos = $('#Notification-area-id').prop('selectionStart');
+        var v = $('#Notification-area-id').val();
+        var textBefore = v.substring(0, cursorPos);
+        var textAfter = v.substring(cursorPos, v.length);
+        $('#Notification-area-id').val(textBefore + "_italic text_" + textAfter);
+    });
+    $('#url-text').on('click', function () {
+        var cursorPos = $('#Notification-area-id').prop('selectionStart');
+        var v = $('#Notification-area-id').val();
+        var textBefore = v.substring(0, cursorPos);
+        var textAfter = v.substring(cursorPos, v.length);
+        $('#Notification-area-id').val(textBefore + "[inline URL](http://www.example.com/)" + textAfter);
+    });
+</script>
+<script>
+function validateForm() {
+    let x = document.forms["notification-form"]["chat-id"].value;
+    let xEmpty = x === '';
+    let zero = document.forms["notification-form"]["ZERO"].checked;
+    console.log(zero)
+    let first = document.forms["notification-form"]["FIRST"].checked;
+    console.log(first)
+    let second = document.forms["notification-form"]["SECOND"].checked;
+    console.log(second)
+    let third = document.forms["notification-form"]["THIRD"].checked;
+    console.log(third)
+    let fourth = document.forms["notification-form"]["FOURTH"].checked;
+    console.log(fourth)
+    let yEmpty = !(zero || first || second || third || fourth);
+    console.log(xEmpty)
+    console.log(yEmpty)
+    if ((xEmpty && yEmpty) || (!xEmpty && !yEmpty))   {
+      alert("Должен быть указан либо CHAT ID, либо STATUS");
+      return false;
+  }
+    return true
+}
+</script>
+</html>
