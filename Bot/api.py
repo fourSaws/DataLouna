@@ -1,11 +1,19 @@
 from typing import BinaryIO, Union
 from urllib.error import HTTPError
 from urllib.request import urlopen
+from urllib.parse import quote
 
 import requests
-from dataTypes import *
+import telebot.types
 
-apiUrl = "http://127.0.0.1:8000/api"
+from dataTypes import *
+from variables import *
+
+from telebot.types import InputTextMessageContent, InputMediaPhoto
+
+# apiUrl = localServerPath + "/api"
+localServerPath = serverPath
+apiUrl = serverPath + "/api"
 
 '''
 ________________________________________________________________
@@ -33,6 +41,8 @@ def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
         print("================================================================================")
         print("getArticlesByKeyWord | keyWord = " + keyWord + " | 400 error")
         print("================================================================================")
+        return None
+    if resp.status_code == 404:
         return None
     data = resp.json()
     articles = []
@@ -109,6 +119,18 @@ def getNode(categoryId: int) -> Union[CategoryNode, None]:
 
 def getPhoto(url: str) -> Union[BinaryIO, None]:
     try:
-        return urlopen('http://127.0.0.1:8000/media/' + url).read()
+        photo = urlopen(localServerPath + '/media/' + quote(url)).read()
+        return photo
     except HTTPError:
         return None
+
+
+def articleToMessage(article: Article) -> [InputTextMessageContent]:
+
+    messageText = f'[📚]({serverPath + "/media/" + article.photoPath})*{article.title}*\n\n{article.text}'
+
+    message = InputTextMessageContent(
+        messageText,
+        parse_mode="Markdown",
+    )
+    return message
