@@ -42,7 +42,9 @@ class UserAdmin(admin.ModelAdmin):
         "chat_id",
         "subscription_status",
         "subscription_end_date",
+        "registration_date",
     ]
+    #readonly_fields = ("registration_date",)
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):

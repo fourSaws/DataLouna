@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "rest_framework.authtoken",
+    "django_crontab"
+]
+
+CRONJOB = [
+    ("*/1 * * * *", "LounaAdmin.cron.do"),
 ]
 
 REST_FRAMEWORK = {
@@ -120,8 +125,8 @@ USE_L10N = False
 USE_I18N = True
 
 USE_TZ = False
+DATE_FORMAT = 'Y-m-d'
 DATETIME_INPUT_FORMATS = '%Y-%m-%d %H:%M:%S'
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
