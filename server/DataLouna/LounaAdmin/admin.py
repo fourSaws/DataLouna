@@ -44,7 +44,7 @@ class UserAdmin(admin.ModelAdmin):
         "subscription_end_date",
         "registration_date",
     ]
-    #readonly_fields = ("registration_date",)
+    # readonly_fields = ("registration_date",)
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):

@@ -379,10 +379,10 @@ class createUser(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_QUERY,
                 description="При создании ZERO, при апдейте либо "
-                            "FIRST(Не оформил триал),"
-                            "либо SECOND(Триал оформлен),"
-                            "либо THIRD(Оформил (продлил?) подписку)"
-                            "либо FOURTH(Карта удалена сразу)",
+                "FIRST(Не оформил триал),"
+                "либо SECOND(Триал оформлен),"
+                "либо THIRD(Оформил (продлил?) подписку)"
+                "либо FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
                 name="subscription_end_date",
@@ -493,7 +493,7 @@ class onEnter(APIView):
             examples={
                 "application/json": {
                     "Bad request": "If the status is not equal to ZERO or FIRST, then you need to pass "
-                                   "subscription_end_date"
+                    "subscription_end_date"
                 }
             },
         ),
@@ -525,10 +525,10 @@ class onEnter(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_QUERY,
                 description="ZERO(Нет аккаунта на сайте)"
-                            "FIRST(Не оформил триал),"
-                            "SECOND(Триал оформлен),"
-                            "THIRD(Оформил (продлил?) подписку)"
-                            "FOURTH(Карта удалена сразу)",
+                "FIRST(Не оформил триал),"
+                "SECOND(Триал оформлен),"
+                "THIRD(Оформил (продлил?) подписку)"
+                "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
                 name="subscription_end_date",
@@ -568,7 +568,7 @@ class onEnter(APIView):
                 return Response(
                     {
                         "Bad request": "If the status is not equal to ZERO or FIRST, then you need to pass "
-                                       "subscription_end_date"
+                        "subscription_end_date"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -624,10 +624,10 @@ class subscriptionPaid(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_QUERY,
                 description="ZERO(Нет аккаунта на сайте)"
-                            "FIRST(Не оформил триал),"
-                            "SECOND(Триал оформлен),"
-                            "THIRD(Оформил (продлил?) подписку)"
-                            "FOURTH(Карта удалена сразу)",
+                "FIRST(Не оформил триал),"
+                "SECOND(Триал оформлен),"
+                "THIRD(Оформил (продлил?) подписку)"
+                "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
                 name="subscription_end_date",
@@ -696,7 +696,7 @@ class updateStatus(APIView):
                 "application/json": {
                     "Bad request": "Invalid status",
                     "Bad request status": "If the status is not equal to ZERO or FIRST, then you need to pass"
-                                          "subscription_end_date",
+                    "subscription_end_date",
                 }
             },
         ),
@@ -721,10 +721,10 @@ class updateStatus(APIView):
                 type=openapi.TYPE_STRING,
                 in_=openapi.IN_QUERY,
                 description="ZERO(Нет аккаунта на сайте)"
-                            "FIRST(Не оформил триал),"
-                            "SECOND(Триал оформлен),"
-                            "THIRD(Оформил (продлил?) подписку)"
-                            "FOURTH(Карта удалена сразу)",
+                "FIRST(Не оформил триал),"
+                "SECOND(Триал оформлен),"
+                "THIRD(Оформил (продлил?) подписку)"
+                "FOURTH(Карта удалена сразу)",
             ),
             openapi.Parameter(
                 name="subscription_end_date",

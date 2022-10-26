@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "rest_framework.authtoken",
-    "django_crontab"
+    "django_crontab",
 ]
 
 CRONJOB = [

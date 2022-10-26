@@ -14,16 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="inactivenewstellers",
             name="title",
-            field=models.CharField(
-                blank=True, max_length=255, null=True, verbose_name="Загловок"
-            ),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Загловок"),
         ),
         migrations.AddField(
             model_name="novicenewstellers",
             name="title",
-            field=models.CharField(
-                blank=True, max_length=255, null=True, verbose_name="Загловок"
-            ),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Загловок"),
         ),
         migrations.AlterField(
             model_name="user",

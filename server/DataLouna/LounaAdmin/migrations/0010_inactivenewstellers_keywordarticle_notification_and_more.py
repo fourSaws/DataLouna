@@ -112,9 +112,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "site_id",
-                    models.IntegerField(
-                        blank=True, null=True, verbose_name="ID на сайте"
-                    ),
+                    models.IntegerField(blank=True, null=True, verbose_name="ID на сайте"),
                 ),
                 (
                     "chat_id",
@@ -137,9 +135,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "subscription_end_date",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="Дата окончания подписки"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="Дата окончания подписки"),
                 ),
             ],
             options={
@@ -222,8 +218,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="categorynode",
             name="articles",
-            field=models.ManyToManyField(
-                blank=True, related_name="art", to="LounaAdmin.article"
-            ),
+            field=models.ManyToManyField(blank=True, related_name="art", to="LounaAdmin.article"),
         ),
     ]
