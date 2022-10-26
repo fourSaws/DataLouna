@@ -128,6 +128,7 @@ class User(models.Model):
         null=True,
     )
     subscription_end_date = models.DateTimeField(verbose_name="Дата окончания подписки", null=True, blank=True)
+    registration_date = models.DateField(verbose_name="Дата регистрации", default=datetime.today())
 
     class Meta:
         verbose_name = "Пользователь"
@@ -165,7 +166,8 @@ def children_post_save(instance: CategoryNode, action, *args, **kwargs):
 
 
 class NoviceNewsTellers(models.Model):
-    after_time = models.DurationField(verbose_name="Переодичность рассылки")
+    title = models.CharField(max_length=255, verbose_name="Загловок", blank=True, null=True)
+    after_time = models.IntegerField(verbose_name="Отправить через")
     text = models.CharField(max_length=500, verbose_name="Текст")
 
     class Meta:
@@ -173,11 +175,12 @@ class NoviceNewsTellers(models.Model):
         verbose_name_plural = "Рассылку новичку"
 
     def __str__(self):
-        return f"{self.after_time}"
+        return self.title
 
 
 class InactiveNewsTellers(models.Model):
-    after_time = models.DurationField(verbose_name="Переодичность рассылки")
+    title = models.CharField(max_length=255, verbose_name="Загловок", blank=True, null=True)
+    after_time = models.IntegerField(verbose_name="Отправить через(в днях)")
     text = models.CharField(max_length=500, verbose_name="Текст")
 
     class Meta:
@@ -185,7 +188,7 @@ class InactiveNewsTellers(models.Model):
         verbose_name_plural = 'Рассылки "спящим" клиентам'
 
     def __str__(self):
-        return f"{self.after_time}"
+        return self.title
 
 
 class Notification(models.Model):

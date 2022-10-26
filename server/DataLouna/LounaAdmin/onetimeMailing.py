@@ -1,6 +1,6 @@
-from telebot import *
-from variables import token
 
+from telebot import *
+from .conf import TOKEN_BOT
 from telebot.types import (
     InputMediaPhoto,
     InputMediaAudio,
@@ -21,21 +21,12 @@ mediaType - тип файлов (1 - картинка, 2 - аудио, 3 - ви�
 
 
 def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[str] = None, mediaType: int = 0):
-    bot = TeleBot(token)
-    # if users == None:
-    #     users = bot.
-    # 986732600
+    bot = TeleBot(TOKEN_BOT)
     print("One time mailing")
-    # a = urlopen("https://upload.wikimedia.org/wikipedia/commons/3/3c/IMG_logo_%282017%29.svg").read()
-    # b = urlopen("https://upload.wikimedia.org/wikipedia/commons/3/3c/IMG_logo_%282017%29.svg").read()
-    # z = InputMediaPhoto(a)
-    # x = InputMediaPhoto(b)
-    # arr:[InputMediaPhoto] = [z, x]
-
     if len(users) == 0:
         return
-    if mediaLinks:
-        if text and title:
+    if not mediaLinks:
+        if not text and not title:
             return
         message = f'*{title}*\n\n{text}'
         for user in users:
@@ -107,5 +98,3 @@ def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[st
         except ApiTelegramException as e:
             print(f'{user} --- {e}')
     return
-    # bot.send_media_group(chat_id=986732600, media=media)
-    # return

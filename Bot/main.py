@@ -1,13 +1,12 @@
 from telebot import *
 from telebot.types import (
     Message,
-    ReplyKeyboardMarkup,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
     InlineQuery,
 )
-from variables import *
+from LounaAdmin.variables import *
 from api import *
 
 bot = TeleBot(token)
