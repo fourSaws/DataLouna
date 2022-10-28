@@ -10,7 +10,6 @@ from rest_framework.views import APIView
 
 from .models import (
     Article,
-    CategoryNode,
     Keywords,
     KeywordArticle,
     User,
@@ -18,10 +17,8 @@ from .models import (
     InactiveNewsTellers,
 )
 from .serializer import (
-    NodeSerializer,
     ArticleSerializer,
-    NodeSerializerArticleId,
-    UserSerializer,
+    UserSerializer, TopSerializer,
 )
 
 
@@ -30,8 +27,6 @@ def RedirectToAdmin(request):
 
 
 class NotificationRender(APIView):
-    permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
@@ -43,7 +38,7 @@ class NotificationRender(APIView):
             ),
         ],
     )
-    def get(self, request):
+    def post(self, request):
         chat_id = request.POST.get("chat-id")
         status_zero = request.POST.get("ZERO")
         status_first = request.POST.get("FIRST")
@@ -75,7 +70,7 @@ class NotificationRender(APIView):
             if not chat_id and not status_exists and not notification:
                 return Response("123")
             if chat_id and status_exists:
-                return Response({"Notification_error": "Можно выбирать либо chat_id или status_frist"})
+                return Response({"Notification_error": "Можно выбирать либо chat_id или status_first"})
 
         else:
             return render(request, "html/Notification_page.html")
@@ -84,13 +79,15 @@ class NotificationRender(APIView):
 class getArticle(APIView):
     permission_classes = [IsAuthenticated]
 
-    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Description", type=openapi.TYPE_STRING)
+    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Get Article object by id", type=openapi.TYPE_STRING)
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={"application/json": {"Article object": "id,title,text,photo"}},
+            examples={"application/json": {"Article object": "id,title,text,photo,links[list(Article objects)]"}},
         ),
         "404": openapi.Response(description="404 Response", examples={"getArticle_Error": "ID not found"}),
+        "400": openapi.Response(description="400 Response", examples={"ValueError": "Bad param"})
+
     }
 
     @swagger_auto_schema(
@@ -98,7 +95,7 @@ class getArticle(APIView):
             openapi.Parameter(
                 "id",
                 in_=openapi.IN_QUERY,
-                description="Description",
+                description="ID of Article object",
                 type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
@@ -117,31 +114,26 @@ class getArticle(APIView):
         except ValueError:
             return Response({"ValueError"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            instance = Article.objects.filter(id=param_id).values()[0]
-            return Response(instance)
+            instance = Article.objects.filter(id=param_id)
+            serializer = TopSerializer(instance, many=True)
+            return Response(serializer.data)
         except IndexError:
             return Response({"getArticle_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class getChildren(APIView):
+class TopArticles(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = NodeSerializer
+    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Get Article object where top = True", type=openapi.TYPE_STRING)
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
-            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
+            examples={"application/json": {"Article object": "id,title,text,photo,links[Article objects]"}},
         ),
-        "400": openapi.Response(description="400 Response", examples={"getChildren_Error": "ID not found"}),
+        "404": openapi.Response(description="404 Response", examples={"getArticle_Error": "ID not found"}),
     }
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                "parent_id",
-                in_=openapi.IN_QUERY,
-                description="Получить ребенка родителя",
-                type=openapi.TYPE_STRING,
-            ),
             openapi.Parameter(
                 name="Authorization",
                 description="Authorization token",
@@ -153,78 +145,17 @@ class getChildren(APIView):
         responses=response_schema_dict,
     )
     def get(self, request):
-        parent_id = self.request.query_params.get("parent_id")
-        queryset = CategoryNode.objects.filter(parent_id=parent_id).filter(valid=True)
         try:
-            queryset[0]
+            instance = Article.objects.filter(on_top=True)
+            print(instance)
+            serializer = TopSerializer(instance, many=True)
+            return Response(serializer.data)
         except IndexError:
-            return Response(
-                {"getChildren_Error": "ID not found"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        serializers = NodeSerializerArticleId(queryset, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
-
-
-class getNode(APIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = NodeSerializer
-    response_schema_dict = {
-        "200": openapi.Response(
-            description="200 Response",
-            examples={"application/json": {"CategoryNode object": "id,name,parent,final,valid"}},
-        ),
-        "400": openapi.Response(
-            description="400 Response",
-        ),
-    }
-
-    id_param_config = openapi.Parameter(
-        "id",
-        in_=openapi.IN_QUERY,
-        description="Получение узла",
-        type=openapi.TYPE_STRING,
-    )
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "id",
-                in_=openapi.IN_QUERY,
-                description="Получение узла",
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="Authorization",
-                description="Authorization token",
-                required=True,
-                type=openapi.TYPE_STRING,
-                in_=openapi.IN_HEADER,
-            ),
-        ],
-        responses=response_schema_dict,
-    )
-    def get(self, request):
-        id = self.request.query_params.get("id")
-        if id:
-            queryset = CategoryNode.objects.filter(id=id).filter(valid=True)
-            try:
-                queryset[0]
-            except IndexError:
-                return Response(
-                    {"getNode_Error": "ID not found"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            serializers = NodeSerializerArticleId(queryset, many=True)
-            return Response(serializers.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"getNode_Error": "ValueError"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"getArticle_Error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class getArticlesByKeyWords(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = NodeSerializer
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
@@ -282,65 +213,6 @@ class getArticlesByKeyWords(APIView):
                 return Response(articles)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class getArticlesByNode(APIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ArticleSerializer
-    response_schema_dict = {
-        "200": openapi.Response(
-            description="200 Response",
-            examples={"application/json": {"Article object": "id,title,text,photo"}},
-        ),
-        "404": openapi.Response(
-            description="404 Response",
-            examples={"application/json": {"getArticlesByNode_Error": "В этой категории final!=True"}},
-        ),
-    }
-
-    node_id_param_config = openapi.Parameter(
-        "node_id",
-        in_=openapi.IN_QUERY,
-        description="Поиск по ID узла",
-        type=openapi.TYPE_STRING,
-    )
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "node_id",
-                in_=openapi.IN_QUERY,
-                description="Поиск по ID узла",
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="Authorization",
-                description="Authorization token",
-                required=True,
-                type=openapi.TYPE_STRING,
-                in_=openapi.IN_HEADER,
-            ),
-        ],
-        responses=response_schema_dict,
-    )
-    def get(self, request):
-        node_id = self.request.query_params.get("node_id")
-        filter_by_id = CategoryNode.objects.filter(id=node_id).values("articles")[0]["articles"]
-        try:
-            filter_by_id
-        except IndexError:
-            return Response(
-                {"getArticlesByNode_Error": "ID not found"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if CategoryNode.objects.filter(id=node_id).values("final")[0]["final"]:
-            last_articles = Article.objects.filter(id=filter_by_id).values()
-            return Response(last_articles)
-        else:
-            return Response(
-                {"getArticlesByNode": "В этой категории final!=True"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
 
 
 class createUser(APIView):
