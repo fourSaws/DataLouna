@@ -19,7 +19,7 @@ class Article(models.Model):
     title = models.CharField(max_length=255, verbose_name="Короткое описание")
     text = models.TextField(verbose_name="Текст статьи")
     photo = models.ImageField(blank=True, upload_to='someimages', storage=UUIDFileStorage(), verbose_name="Фото")
-    links = models.ManyToManyField(to="Article", verbose_name="Ссылки на статьи")
+    links = models.ManyToManyField(to="Article", verbose_name="Ссылки на статьи",blank=True, null=True)
     on_top = models.BooleanField(default=False, verbose_name="Верхняя статья")
 
     def links_many_to_many(self):
