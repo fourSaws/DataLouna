@@ -5,27 +5,7 @@ from .models import *
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = "__all__"
-
-
-class NodeSerializerUnpack(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryNode
-        fields = ("id", "name")
-
-
-class NodeSerializer(serializers.ModelSerializer):
-    articles = ArticleSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = CategoryNode
-        fields = ("id", "name", "parent", "articles", "final")
-
-
-class NodeSerializerArticleId(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryNode
-        fields = ("id", "name", "parent", "final", "valid")
+        fields = ("id", "title")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,3 +31,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
+class TopSerializer(serializers.ModelSerializer):
+    links = ArticleSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Article
+        fields = ("id", "title", "text", "photo", "links", "on_top")

@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 from .models import (
     Article,
     Keywords,
-    CategoryNode,
     KeywordArticle,
     User,
     NoviceNewsTellers,
@@ -14,7 +13,15 @@ from .models import (
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "text", "photo", "get_html_photo")
+    list_display = (
+        "id",
+        "title",
+        "text",
+        'links_many_to_many',
+        'on_top',
+        "photo",
+        "get_html_photo",
+    )
 
     def get_html_photo(self, obj):
         if obj.photo:
@@ -23,17 +30,14 @@ class ArticleAdmin(admin.ModelAdmin):
         else:
             return mark_safe('<img src= "default.jpg">')
 
+    filter_horizontal = [
+        "links",
+    ]
     get_html_photo.short_description = "Миниатюра"
 
 
 class KeywordsAdmin(admin.ModelAdmin):
     list_display = ("id", "text")
-
-
-class CategoryNodeAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "articles_names", "parent", "valid")
-    filter_horizontal = ["articles"]
-    readonly_fields = ["valid", "final"]
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -67,7 +71,6 @@ class NotificationAdmin(admin.ModelAdmin):
 
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
-admin.site.register(CategoryNode, CategoryNodeAdmin)
 admin.site.register(KeywordArticle, KeywordsArticleAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(NoviceNewsTellers, NoviceNewsTellersAdmin)
