@@ -18,7 +18,8 @@ from .models import (
 )
 from .serializer import (
     ArticleSerializer,
-    UserSerializer, TopSerializer,
+    UserSerializer,
+    TopSerializer,
 )
 
 
@@ -79,15 +80,16 @@ class NotificationRender(APIView):
 class getArticle(APIView):
     permission_classes = [IsAuthenticated]
 
-    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Get Article object by id", type=openapi.TYPE_STRING)
+    id_param_config = openapi.Parameter(
+        "id", in_=openapi.IN_QUERY, description="Get Article object by id", type=openapi.TYPE_STRING
+    )
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",
             examples={"application/json": {"Article object": "id,title,text,photo,links[list(Article objects)]"}},
         ),
         "404": openapi.Response(description="404 Response", examples={"getArticle_Error": "ID not found"}),
-        "400": openapi.Response(description="400 Response", examples={"ValueError": "Bad param"})
-
+        "400": openapi.Response(description="400 Response", examples={"ValueError": "Bad param"}),
     }
 
     @swagger_auto_schema(
@@ -123,7 +125,9 @@ class getArticle(APIView):
 
 class TopArticles(APIView):
     permission_classes = [IsAuthenticated]
-    id_param_config = openapi.Parameter("id", in_=openapi.IN_QUERY, description="Get Article object where top = True", type=openapi.TYPE_STRING)
+    id_param_config = openapi.Parameter(
+        "id", in_=openapi.IN_QUERY, description="Get Article object where top = True", type=openapi.TYPE_STRING
+    )
     response_schema_dict = {
         "200": openapi.Response(
             description="200 Response",

@@ -4,10 +4,12 @@ from collections import namedtuple
 import datetime
 from types import SimpleNamespace
 
+
 @dataclass
 class PreArticle:
     id: int
     title: str
+
 
 @dataclass
 class Article:
@@ -20,12 +22,12 @@ class Article:
 
 @dataclass
 class User:
-    chatId: int #id чата с пользователем в телеграме
-    subscriptionStatus: str #статус подписки
+    chatId: int  # id чата с пользователем в телеграме
+    subscriptionStatus: str  # статус подписки
     # При создании ZERO
     # при апдейте либо FIRST(Не оформил триал)
     # либо SECOND(Триал оформлен)
     # либо THIRD(Оформил (продлил?) подписку)
     # либо FOURTH(Карта удалена сразу)
-    subscriptionEndDate: str #дата окончания даты подписки
-    siteId: int #id ользователя на сайте
+    subscriptionEndDate: str  # дата окончания даты подписки
+    siteId: int  # id ользователя на сайте

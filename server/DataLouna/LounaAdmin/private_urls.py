@@ -8,7 +8,7 @@ from .views import (
     createUser,
     getUser,
     NotificationRender,
-    TopArticles
+    TopArticles,
 )
 
 urlpatterns = [
@@ -18,5 +18,5 @@ urlpatterns = [
     path("api/createUser", createUser.as_view()),
     path("api/getUser", getUser.as_view()),
     path("notification/", NotificationRender.as_view()),
-    path("api/topArticles", TopArticles.as_view())
+    path("api/topArticles", TopArticles.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

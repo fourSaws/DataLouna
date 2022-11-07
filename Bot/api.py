@@ -26,11 +26,9 @@ Article methods
 
 def getArticle(id: int = -1) -> Union[Article, None]:
     if id < 0:
-        resp = requests.get(apiUrl + "/topArticles",
-                            headers={'Authorization': authToken})
+        resp = requests.get(apiUrl + "/topArticles", headers={'Authorization': authToken})
     else:
-        resp = requests.get(apiUrl + "/getArticle", params={'id': id},
-                            headers={'Authorization': authToken})
+        resp = requests.get(apiUrl + "/getArticle", params={'id': id}, headers={'Authorization': authToken})
     if resp.status_code != 200:
         if resp.status_code == 400:
             print("================================================================================")
@@ -53,14 +51,15 @@ def getArticle(id: int = -1) -> Union[Article, None]:
         title=str(data['title']),
         text=str(data['text']),
         photoPath=str(data['photo']),
-        childList=[PreArticle(preArticle["id"], preArticle["title"]) for preArticle in data['links']]
+        childList=[PreArticle(preArticle["id"], preArticle["title"]) for preArticle in data['links']],
     )
     return article
 
 
 def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
-    resp = requests.get(apiUrl + "/getArticlesByKeyWords", params={'word': keyWord},
-                        headers={'Authorization': authToken})
+    resp = requests.get(
+        apiUrl + "/getArticlesByKeyWords", params={'word': keyWord}, headers={'Authorization': authToken}
+    )
     if resp.status_code == 400:
         print("================================================================================")
         print("getArticlesByKeyWord | keyWord = " + keyWord + " | 400 error")
@@ -79,10 +78,11 @@ def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
                 title=str(i['title']),
                 text=str(i['text']),
                 photoPath=str(i['photo']),
-                childList=data['links'].loads(data, object_hook=lambda d: SimpleNamespace(**d))
+                childList=data['links'].loads(data, object_hook=lambda d: SimpleNamespace(**d)),
             )
         )
     return articles
+
 
 '''
 ________________________________________________________________
@@ -92,9 +92,12 @@ User methods
 # def userSubStatus(subStatus: int):
 
 
-def createUser(chatId: int, subStatus: str = "ZERO" ) -> Union[int]:
-    resp = requests.get(apiUrl + "/createUser", params={'chat_id': chatId, 'subscription_status': subStatus},
-                        headers={'Authorization': authToken})
+def createUser(chatId: int, subStatus: str = "ZERO") -> Union[int]:
+    resp = requests.get(
+        apiUrl + "/createUser",
+        params={'chat_id': chatId, 'subscription_status': subStatus},
+        headers={'Authorization': authToken},
+    )
     if resp.status_code != 200:
         if resp.status_code == 400:
             print("================================================================================")
@@ -111,9 +114,9 @@ def createUser(chatId: int, subStatus: str = "ZERO" ) -> Union[int]:
         return 0
     return 1
 
+
 def getUser(chatId: int) -> Union[User, None]:
-    resp = requests.get(apiUrl + "/getUser", params={'chat_id': chatId},
-                        headers={'Authorization': authToken})
+    resp = requests.get(apiUrl + "/getUser", params={'chat_id': chatId}, headers={'Authorization': authToken})
     if resp.status_code != 200:
         if resp.status_code == 404:
             print("================================================================================")
@@ -137,10 +140,12 @@ def getUser(chatId: int) -> Union[User, None]:
     )
     return user
 
+
 '''
 ________________________________________________________________
 Global methods
 '''
+
 
 def getPhoto(url: str) -> Union[BinaryIO, None]:
     if url == '' or url is None:

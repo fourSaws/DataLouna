@@ -44,8 +44,7 @@ def send_category(message: types.Message):
         markup.add(
             InlineKeyboardButton(
                 text=i.title,
-                callback_data="a" + chr(root.id)
-                              + chr(i.id),
+                callback_data="a" + chr(root.id) + chr(i.id),
             )
         )  # parentId
     bot.send_message(message.from_user.id, root.title + "\n\nКатегории", reply_markup=markup)
@@ -88,24 +87,13 @@ def articleCallback(call: CallbackQuery):
         markup.add(
             InlineKeyboardButton(
                 text=i.title,
-                callback_data="a" + cbdata
-                              + chr(i.id),
+                callback_data="a" + cbdata + chr(i.id),
             )
         )  # parentId
     if len(cbdata) == 2 and ord(cbdata[0]) != getArticle().id:
-        markup.add(
-            InlineKeyboardButton(
-                text="На главную",
-                callback_data="a"+chr(getArticle().id)
-            )
-        )
+        markup.add(InlineKeyboardButton(text="На главную", callback_data="a" + chr(getArticle().id)))
     elif len(cbdata) >= 2:
-        markup.add(
-            InlineKeyboardButton(
-                text="Назад",
-                callback_data="a"+cbdata[:-1]
-            )
-        )  # parentId))
+        markup.add(InlineKeyboardButton(text="Назад", callback_data="a" + cbdata[:-1]))  # parentId))
     # print(article.photoPath)
     messageText = f'*{article.title}*\n\n{article.text}'
     img = getPhoto(article.photoPath)
@@ -170,4 +158,3 @@ ________________________________________________________________________________
 Channel access
 ________________________________________________________________________________________________________________________
 '''
-

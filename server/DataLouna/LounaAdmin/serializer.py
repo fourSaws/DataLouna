@@ -35,6 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TopSerializer(serializers.ModelSerializer):
     links = ArticleSerializer(many=True, read_only=True)
+
     class Meta:
         model = Article
         fields = ("id", "title", "text", "photo", "links", "on_top")
