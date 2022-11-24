@@ -10,6 +10,7 @@ import telebot.types
 
 from dataTypes import *
 from variables import *
+from datetime import datetime
 
 from telebot.types import InputTextMessageContent, InputMediaPhoto
 
@@ -17,6 +18,15 @@ apiUrl = localServerPath + "/api"
 # localServerPath = serverPath
 # apiUrl = serverPath + "/api"
 authToken = "Token " + authorization
+
+def strIsNoneToInt(val: str):
+    if val is None:
+        return None
+    else:
+        return int(val)
+
+# def strIsNoneToDate(val: str):
+
 
 '''
 ________________________________________________________________
@@ -70,16 +80,18 @@ def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
         return None
     data = resp.json()
     articles = []
+    print(data)
     for i in data:
-        if data['photo'] == None:
-            data['photo'] = ""
+        print(i['photo'])
+        if i['photo'] == None:
+            i['photo'] = ""
         articles.append(
             Article(
                 id=int(i['id']),
                 title=str(i['title']),
                 text=str(i['text']),
                 photoPath=str(i['photo']),
-                childList=data['links'].loads(data, object_hook=lambda d: SimpleNamespace(**d))
+                childList=[]
             )
         )
     return articles
@@ -108,8 +120,8 @@ def createUser(chatId: int, subStatus: str = "ZERO" ) -> Union[int]:
             print("================================================================================")
             print("createUser | chatId = " + str(chatId) + " | unknown " + str(resp.status_code) + " error")
             print("================================================================================")
-        return 0
-    return 1
+        return False
+    return True
 
 def getUser(chatId: int) -> Union[User, None]:
     resp = requests.get(apiUrl + "/getUser", params={'chat_id': chatId},
@@ -117,7 +129,7 @@ def getUser(chatId: int) -> Union[User, None]:
     if resp.status_code != 200:
         if resp.status_code == 404:
             print("================================================================================")
-            print("getUser | chatId = " + str(chatId) + " | No such User | 404 error | server answer = " + resp.json())
+            print("getUser | chatId = " + str(chatId) + " | No such User | 404 error | server answer = " + str(resp.json()))
             print("================================================================================")
         elif resp.status_code == 401:
             print("================================================================================")
@@ -128,12 +140,19 @@ def getUser(chatId: int) -> Union[User, None]:
             print("getUser | chatId = " + str(chatId) + " | unknown " + str(resp.status_code) + " error")
             print("================================================================================")
         return None
-    data = resp.json()
+    data = resp.json()[0]
+    # user = User(
+    #     chatId=int(data['chat_id']),
+    #     siteId=int(data['site_id']),
+    #     subscriptionStatus=str(data['subscription_status']),
+    #     subscriptionEndDate=str(data['subscription_end_date']),
+    # )
+    print(data)
     user = User(
-        chatId=int(data['chat_id']),
-        siteId=int(data['site_id']),
-        subscriptionStatus=str(data['text']),
-        subscriptionEndDate=str(data['subscription_end_date']),
+        chatId=strIsNoneToInt(data['chat_id']),
+        siteId=strIsNoneToInt(data['site_id']),
+        subscriptionStatus=str(data['subscription_status']),
+        subscriptionEndDate=(datetime.strptime(str(data['subscription_end_date']), '%Y-%m-%dT%H:%M:%S') if data.get('subscription_end_date') else None),
     )
     return user
 
@@ -141,6 +160,11 @@ def getUser(chatId: int) -> Union[User, None]:
 ________________________________________________________________
 Global methods
 '''
+
+def sendQuizAnswer(codedAnswere: str):
+    resp = requests.get(apiUrl + "/sendQuizAnswer", params={'codeString': codedAnswere},
+                        headers={'Authorization': authToken})
+
 
 def getPhoto(url: str) -> Union[BinaryIO, None]:
     if url == '' or url is None:

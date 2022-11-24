@@ -1,8 +1,9 @@
 # import typing
 from dataclasses import dataclass
 from collections import namedtuple
-import datetime
+from datetime import datetime
 from types import SimpleNamespace
+from typing import Union
 
 @dataclass
 class PreArticle:
@@ -20,12 +21,13 @@ class Article:
 
 @dataclass
 class User:
-    chatId: int #id чата с пользователем в телеграме
+    chatId: Union[int, None] #id чата с пользователем в телеграме
+    siteId: Union[int, None] #id ользователя на сайте
     subscriptionStatus: str #статус подписки
     # При создании ZERO
     # при апдейте либо FIRST(Не оформил триал)
     # либо SECOND(Триал оформлен)
     # либо THIRD(Оформил (продлил?) подписку)
     # либо FOURTH(Карта удалена сразу)
-    subscriptionEndDate: str #дата окончания даты подписки
-    siteId: int #id ользователя на сайте
+    # subscriptionEndDate: str #дата окончания даты подписки
+    subscriptionEndDate: datetime #дата окончания даты подписки

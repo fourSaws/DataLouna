@@ -5,6 +5,7 @@ from telebot.types import (
     InputMediaPhoto,
     InputMediaAudio,
     InputMediaVideo,
+    InlineKeyboardMarkup
 )
 from telebot.apihelper import ApiTelegramException
 
@@ -59,24 +60,42 @@ def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[st
         if mediaType == 1:  # img
             if message == None:
                 for user in users:
-                    bot.send_photo(user, media[0])
+                    try:
+                        bot.send_photo(user, media[0])
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
             else:
                 for user in users:
-                    bot.send_photo(user, media[0], caption=message, parse_mode="Markdown")
+                    try:
+                        bot.send_photo(user, media[0], caption=message, parse_mode="Markdown")
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
         elif mediaType == 2:  # audio
             if message == None:
                 for user in users:
-                    bot.send_audio(user, media[0])
+                    try:
+                        bot.send_audio(user, media[0])
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
             else:
                 for user in users:
-                    bot.send_audio(user, media[0], caption=message, parse_mode="Markdown")
+                    try:
+                        bot.send_audio(user, media[0], caption=message, parse_mode="Markdown")
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
         elif mediaType == 3:  # video
             if message == None:
                 for user in users:
-                    bot.send_video(user, media[0])
+                    try:
+                        bot.send_video(user, media[0])
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
             else:
                 for user in users:
-                    bot.send_video(user, media[0], caption=message, parse_mode="Markdown")
+                    try:
+                        bot.send_video(user, media[0], caption=message, parse_mode="Markdown")
+                    except ApiTelegramException as e:
+                        print(f'{user} --- {e}')
         return
 
     if mediaType == 1:  # img
@@ -109,3 +128,26 @@ def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[st
     return
     # bot.send_media_group(chat_id=986732600, media=media)
     # return
+
+# def sub
+
+
+
+def quiz(text: str, markup: InlineKeyboardMarkup, users: list[int]):
+    '''
+    Функция для рассылки опросов
+    :param text: Текст вопроса
+    :param markup: Клавиатура опроса класса InlineKeyboardMarkup. У каждой кнопки клавиатуры первый символ "callback_data" должен быть "q"
+    :param users: Список id пользователей, которым нужно отправить вопрос
+    :return:
+    '''
+    bot = TeleBot(token)
+    for user in users:
+        try:
+            bot.send_message(chat_id=user,
+                             text=text,
+                             reply_markup=markup,
+                             parse_mode="Markdown",
+                             )
+        except ApiTelegramException as e:
+            print(f'{user} --- {e}')
