@@ -214,10 +214,10 @@ def inlineMode(data: InlineQuery):
             )
         )
         cnt += 1
-    bot.answer_inline_query(data.id, inlineQuery)
+    bot.answer_inline_query(str(data.id), inlineQuery)
 
 
-bot.infinity_polling()
+
 
 '''
 ________________________________________________________________________________________________________________________
@@ -228,8 +228,8 @@ ________________________________________________________________________________
 @bot.chat_join_request_handler()
 def joinChannelReques(request: types.ChatJoinRequest):
     # res = getAccess(request.chat.id)
-    print("avavavvavavvavavavva")
-    bot.approve_chat_join_request(chat_id=-1001821379673, user_id=354640082)
+    # print("avavavvavavvavavavva")
+    # bot.approve_chat_join_request(chat_id=-1001821379673, user_id=354640082)
     res = True
     if res:
         markup = InlineKeyboardMarkup(row_width=1)
@@ -244,5 +244,15 @@ ________________________________________________________________________________
 Main access
 ________________________________________________________________________________________________________________________
 '''
+
+
+
+'''
+________________________________________________________________________________________________________________________
+Bot polling
+________________________________________________________________________________________________________________________
+'''
+
+bot.infinity_polling()
 
 
