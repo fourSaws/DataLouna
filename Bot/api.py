@@ -11,6 +11,7 @@ import telebot.types
 from dataTypes import *
 from variables import *
 from datetime import datetime
+import jwt
 
 from telebot.types import InputTextMessageContent, InputMediaPhoto
 
@@ -185,3 +186,8 @@ def articleToMessage(article: Article) -> [InputTextMessageContent]:
         parse_mode="Markdown",
     )
     return message
+
+def generateJoinLink(name: str, uId: int):
+    link = websiteLink + "?dltlg=" + jwt.encode({"id": uId, "name":name}, jwtKey)
+    return link
+

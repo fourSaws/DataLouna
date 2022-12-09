@@ -18,7 +18,7 @@ def createInvteLink():
     link = bot.create_chat_invite_link(chat_id=channelId,
                                        creates_join_request=True)
     # print(link)
-    return link
+    return link.invite_link
 
 def getAccess(uId: int):
     user = getUser(uId)
