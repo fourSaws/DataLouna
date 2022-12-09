@@ -131,10 +131,12 @@ def knowledgeBase(message: types.Message):
     if user.subscriptionEndDate is None:
         bot.send_message(message.chat.id, text="Пока не могу показать тебе эту информацию.\n"
                                                "Сначала оформи подписку.", reply_markup=subscribeUrlKb)
+        return
     if user.subscriptionEndDate < datetime.now():
         bot.send_message(message.chat.id,
                          text="К сожалению твоя подписка уже закончилась и я больше не могу показать тебе эту информацию.",
                          reply_markup=subscribeUrlKb)
+        return
 
     markup = InlineKeyboardMarkup()
     root = getArticle()
@@ -182,10 +184,12 @@ def articleCallback(call: CallbackQuery):
         bot.send_message(call.message.chat.id,
                          text="Не понимаю как ты сюда попал. Должно быть случилась какая-то ошибка.\n"
                               "Сначала оформи подписку.", reply_markup=subscribeUrlKb)
+        return
     if user.subscriptionEndDate < datetime.now():
         bot.send_message(call.message.chat.id,
                          text="К сожалению твоя подписка уже закончилась и я больше не могу показать тебе эту информацию.",
                          reply_markup=subscribeUrlKb)
+        return
 
     markup = InlineKeyboardMarkup()
     cbdata = call.data[1:]
