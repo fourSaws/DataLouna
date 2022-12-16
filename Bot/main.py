@@ -106,20 +106,11 @@ def onRegControl(message: Message):
 
 @bot.message_handler(commands=['start'])
 def send_hi(message: Message):
-    print(message.chat.id, " - ", message.chat.first_name, " send /start")
-    bot.send_message(message.chat.id, '''👋 Привет, я — твой персональный помощник в работе с нашим сервисом DataLouna.ru. Вот, что ждет тебя внутри:🧠 Объясним, как начать зарабатывать с DataLouna
-    
-💲 Управление банком
-
-💰 Как не растерять все деньги и преумножить их
-
-👀 Уникальные фишки — в боте раньше, чем на сайте
-
-🎁 Ежемесячные конкурсы
-
-🤔 Ответы на все твои вопросы
-
-🤝 Информация о твоей подписке😎 Закрытый клуб для подписчиков, в котором сидят создатели DataLouna''', reply_markup=mainKb)
+    # print(message.chat.id, " - ", message.chat.first_name, " send /start")
+    messageText = getMessageTexts(4)
+    if messageText is None:
+        bot.send_message(message.chat.id, '''Произошла какая-то ошибка, обратитесь к администратору.''')
+    bot.send_message(message.chat.id, text=messageText, reply_markup=mainKb, parse_mode="Markdown")
     if getUser(message.chat.id) is None:
         createUser(message.chat.id)
     onRegControl(message)
@@ -158,6 +149,13 @@ def knowledgeBase(message: types.Message):
                               + chr(i.id),
             )
         )  # parentId
+
+    markup.add(
+        InlineKeyboardButton(
+            text="Поиск",
+            switch_inline_query_current_chat=""
+        )
+    )
     bot.send_message(message.from_user.id, root.title + "\n\nКатегории", reply_markup=markup)
 
 
@@ -194,8 +192,8 @@ def articleCallback(call: CallbackQuery):
     markup = InlineKeyboardMarkup()
     cbdata = call.data[1:]
     article = getArticle(ord(cbdata[-1]))
-    if len(cbdata) + 1 == 40:
-        cbdata = cbdata[1:]
+    if len(cbdata) + 3 == 40:
+        cbdata = cbdata[3:]
     # ---------------------------------------------------------------
     if article is None:
         print("__ ", call.message.chat.id)
@@ -214,6 +212,19 @@ def articleCallback(call: CallbackQuery):
                               + chr(i.id),
             )
         )  # parentId
+
+    # markup.add(
+    #             InlineKeyboardButton(
+    #                 text="Назад",
+    #                 callback_data="a" + cbdata[:-1]
+    #             )
+    #         )
+    # markup.add(
+    #             InlineKeyboardButton(
+    #                 text="На главную",
+    #                 callback_data="a" + chr(getArticle().id)
+    #             )
+    #         )
     if len(cbdata) == 2 and ord(cbdata[0]) != getArticle().id:
         markup.add(
             InlineKeyboardButton(
@@ -228,6 +239,19 @@ def articleCallback(call: CallbackQuery):
                 callback_data="a" + cbdata[:-1]
             )
         )  # parentId))
+        markup.add(
+            InlineKeyboardButton(
+                text="На главную",
+                callback_data="a" + chr(getArticle().id)
+            )
+        )
+    if article.id == getArticle().id:
+        markup.add(
+            InlineKeyboardButton(
+                text="Поиск",
+                switch_inline_query_current_chat=""
+            )
+        )
     # print(article.photoPath)
     messageText = f'*{article.title}*\n\n{article.text}'
     img = getPhoto(article.photoPath)
@@ -308,10 +332,10 @@ ________________________________________________________________________________
 
 @bot.inline_handler(func=lambda query: len(query.query) > 0)
 def inlineMode(data: InlineQuery):
-    print(data)
-    print(data.query)
+    # print(data)
+    # print(data.query)
     articles = getArticlesByKeyWord(data.query)
-    print(articles)
+    # print(articles)
     if articles == None:
         return
     inlineQuery = []
@@ -341,14 +365,17 @@ def joinChannelReques(request: types.ChatJoinRequest):
     # res = getAccess(request.chat.id)
     # print("avavavvavavvavavavva")
     # bot.approve_chat_join_request(chat_id=-1001821379673, user_id=354640082)
-    res = True
+    uid = request.from_user.id
+    res = getAccess(uid)
+    print("chatJoinRequest")
     print(request)
     if res:
+
         markup = InlineKeyboardMarkup(row_width=1)
         markup.add(InlineKeyboardButton(text="Перейти в канал", url=createInvteLink()))
-        bot.send_message(request.chat.id, text="Вы успешно добавлены в канал.", )
+        bot.send_message(uid, text="Вы успешно добавлены в канал.", )
     else:
-        bot.send_message(request.chat.id, text="Вам отказано в доступе в канал. Оформите или продлите подкиску.",
+        bot.send_message(uid, text="Вам отказано в доступе в канал. Оформите или продлите подкиску.",
                          reply_markup=subscribeUrlKb)
 
 

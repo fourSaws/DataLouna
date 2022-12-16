@@ -81,7 +81,7 @@ def getArticlesByKeyWord(keyWord: str) -> Union[list[Article], None]:
         return None
     data = resp.json()
     articles = []
-    print(data)
+    # print(data)
     for i in data:
         print(i['photo'])
         if i['photo'] == None:
@@ -127,6 +127,7 @@ def createUser(chatId: int, subStatus: str = "ZERO" ) -> Union[int]:
 def getUser(chatId: int) -> Union[User, None]:
     resp = requests.get(apiUrl + "/getUser", params={'chat_id': chatId},
                         headers={'Authorization': authToken})
+    print(resp.text)
     if resp.status_code != 200:
         if resp.status_code == 404:
             print("================================================================================")
@@ -156,6 +157,23 @@ def getUser(chatId: int) -> Union[User, None]:
         subscriptionEndDate=(datetime.strptime(str(data['subscription_end_date']), '%Y-%m-%dT%H:%M:%S') if data.get('subscription_end_date') else None),
     )
     return user
+
+
+'''
+________________________________________________________________
+Global texts methods
+'''
+
+def getMessageTexts(id: int):
+    resp = requests.get(apiUrl + "/botMessageData", params={'id': id},
+                        headers={'Authorization': authToken})
+    if resp.status_code != 200:
+        print("================================================================================")
+        print("getUser | textId = " + str(id) + " | unknown " + str(resp.status_code) + " error")
+        print("================================================================================")
+        return None
+
+    return resp.json()
 
 '''
 ________________________________________________________________
