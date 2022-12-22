@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'DataLounaNotifications',
     "LounaAdmin",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,11 +40,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "rest_framework.authtoken",
-    "django_crontab"
+    "django_crontab",
 ]
 
 CRONJOB = [
-    ("*/1 * * * *", "LounaAdmin.cron.do"),
+    ("* 24 * * *", "LounaAdmin.cron.QuizAfterTrialPymentPaymentDeclined"),
+    ("* 24 * * *", "LounaAdmin.cron.QuizSubscriptionUsers")
 ]
 
 REST_FRAMEWORK = {
@@ -120,13 +122,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 USE_L10N = False
 USE_I18N = True
 
 USE_TZ = False
-DATE_FORMAT = 'Y-m-d'
-DATETIME_INPUT_FORMATS = '%Y-%m-%d %H:%M:%S'
+DATE_FORMAT = "Y-m-d"
+DATETIME_INPUT_FORMATS = "%Y-%m-%d %H:%M:%S"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 

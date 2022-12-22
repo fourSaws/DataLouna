@@ -1,15 +1,36 @@
+import os
 from datetime import datetime
+from uuid import uuid4
 
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import m2m_changed, pre_delete
 from django.dispatch import receiver
+
+
+class UUIDFileStorage(FileSystemStorage):
+    def get_available_name(self, name, max_length=None):
+        _, ext = os.path.splitext(name)
+        return uuid4().hex + ext
 
 
 class Article(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name="Короткое описание")
     text = models.TextField(verbose_name="Текст статьи")
-    photo = models.ImageField(blank=True, verbose_name="Фото")
+    photo = models.ImageField(
+        blank=True,
+        upload_to="someimages",
+        storage=UUIDFileStorage(),
+        verbose_name="Фото",
+    )
+    links = models.ManyToManyField(to="Article", verbose_name="Ссылки на статьи", blank=True, null=True)
+    on_top = models.BooleanField(default=False, verbose_name="Верхняя статья", blank=True, null=True)
+
+    def links_many_to_many(self):
+        return ", ".join([a.title for a in self.links.all()])
+
+    links_many_to_many.short_description = "Ссылка на статьи"
 
     def __str__(self):
         return f"{self.title}"
@@ -47,62 +68,11 @@ class KeywordArticle(models.Model):
     )
 
     def __str__(self):
-        return "Ключевые слова"
+        return f"{self.keywords_id}"
 
     class Meta:
         verbose_name = "Ключевое слово статьи"
         verbose_name_plural = "Ключевое слово статьи"
-
-
-class CategoryNode(models.Model):
-    name = models.CharField(max_length=255)
-    parent = models.ForeignKey(
-        "CategoryNode",
-        on_delete=models.CASCADE,
-        related_name="parent_rel",
-        blank=True,
-        null=True,
-    )
-    articles = models.ManyToManyField(
-        "Article",
-        related_name="art",
-        blank=True,
-    )
-    valid = models.BooleanField(default=False)
-    final = models.BooleanField(default=False)
-
-    def articles_names(self):
-        return ", ".join([a.title for a in self.articles.all()])
-
-    articles_names.short_description = "articles"
-
-    def get_id(self):
-        return self.articles.values("id")
-
-    def __str__(self):
-        return f"{self.name}"
-
-    def save(self, *args, **kwargs):
-        print(f"save:{self}")
-        if kwargs.get("super"):
-            return super(CategoryNode, self).save()
-        super(CategoryNode, self).save()
-        has_kids = False
-        for p in CategoryNode.objects.filter(parent=self.id):
-            if p.valid and p != kwargs.get("deleted_child"):
-                has_kids = True
-                break
-        has_articles = bool(self.articles.all())
-        self.valid = has_kids != has_articles
-        self.final = has_articles
-        super(CategoryNode, self).save()
-        if self.parent:
-            self.parent.save()
-        return super(CategoryNode, self).save()
-
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
 
 
 class User(models.Model):
@@ -115,20 +85,21 @@ class User(models.Model):
         (ZERO, "Нет аккаунта на сайте"),
         (FIRST, "Не оформил триал"),
         (SECOND, "Триал оформлен"),
-        (THIRD, "Оформил (продлил?) подписку"),
+        (THIRD, "Оформил (продлил) подписку"),
         (FOURTH, "Карта удалена сразу"),
     ]
 
-    site_id = models.IntegerField(verbose_name="ID на сайте", blank=True, null=True)
+    site_id = models.CharField(verbose_name="ID на сайте",max_length=500, blank=True, null=True)
     chat_id = models.IntegerField(verbose_name="Чат ID", blank=True, null=True)
     subscription_status = models.CharField(
         choices=STATUS_CHOICES,
         max_length=255,
         verbose_name="Статус подписки",
         null=True,
+        default=FIRST,
     )
-    subscription_end_date = models.DateTimeField(verbose_name="Дата окончания подписки", null=True, blank=True)
-    registration_date = models.DateField(verbose_name="Дата регистрации", default=datetime.today())
+    subscription_end_date = models.DateField(verbose_name="Дата окончания подписки", null=True, blank=True)
+
 
     class Meta:
         verbose_name = "Пользователь"
@@ -138,49 +109,21 @@ class User(models.Model):
         return f"{self.chat_id}"
 
 
-@receiver(pre_delete, sender=CategoryNode)
-def delete_image_hook(sender, instance: CategoryNode, using, **kwargs):
-    instance.parent.save(deleted_child=instance)
-
-
-@receiver(m2m_changed, sender=CategoryNode.articles.through)
-def children_post_save(instance: CategoryNode, action, *args, **kwargs):
-    print(f"m2m_changed:{instance}")
-    if action != "post_add" and action != "post_remove":
-        return None
-    has_kids = False
-    for p in CategoryNode.objects.filter(parent=instance.id):
-        if p.valid:
-            has_kids = True
-            break
-
-    has_articles = bool(instance.articles.all())
-    instance.valid = has_kids != has_articles
-    instance.final = has_articles
-    instance.save(super=True)
-
-    if instance.parent:
-        instance.parent.save()
-    print(f"m2m_changed:{has_kids=},{has_articles=}")
-    return None
-
-
 class NoviceNewsTellers(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Загловок", blank=True, null=True)
-    after_time = models.IntegerField(verbose_name="Отправить через")
+    title = models.CharField(max_length=255, null=True, blank=True)
+    after_time = models.IntegerField(blank=True, null=True)
     text = models.CharField(max_length=500, verbose_name="Текст")
 
     class Meta:
         verbose_name = "Рассылка новичку"
-        verbose_name_plural = "Рассылку новичку"
+        verbose_name_plural = "Рассылка новичку"
 
     def __str__(self):
-        return self.title
+        return f"{self.after_time}"
 
 
 class InactiveNewsTellers(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Загловок", blank=True, null=True)
-    after_time = models.IntegerField(verbose_name="Отправить через(в днях)")
+    after_time = models.DurationField(verbose_name="Переодичность рассылки")
     text = models.CharField(max_length=500, verbose_name="Текст")
 
     class Meta:
@@ -188,7 +131,7 @@ class InactiveNewsTellers(models.Model):
         verbose_name_plural = 'Рассылки "спящим" клиентам'
 
     def __str__(self):
-        return self.title
+        return f"{self.after_time}"
 
 
 class Notification(models.Model):
@@ -208,3 +151,6 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.type}"
+
+
+

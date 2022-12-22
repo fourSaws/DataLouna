@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 from .models import (
     Article,
     Keywords,
-    CategoryNode,
     KeywordArticle,
     User,
     NoviceNewsTellers,
@@ -42,9 +41,8 @@ class UserAdmin(admin.ModelAdmin):
         "chat_id",
         "subscription_status",
         "subscription_end_date",
-        "registration_date",
     ]
-    #readonly_fields = ("registration_date",)
+    # readonly_fields = ("registration_date",)
 
 
 class KeywordsArticleAdmin(admin.ModelAdmin):
@@ -69,9 +67,8 @@ class NotificationAdmin(admin.ModelAdmin):
 
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Keywords, KeywordsAdmin)
-admin.site.register(CategoryNode, CategoryNodeAdmin)
 admin.site.register(KeywordArticle, KeywordsArticleAdmin)
 admin.site.register(User, UserAdmin)
-admin.site.register(NoviceNewsTellers, NoviceNewsTellersAdmin)
-admin.site.register(InactiveNewsTellers, InactiveNewsTellersAdmin)
-admin.site.register(Notification, NotificationAdmin)
+# admin.site.register(NoviceNewsTellers, NoviceNewsTellersAdmin)
+# admin.site.register(InactiveNewsTellers, InactiveNewsTellersAdmin)
+# admin.site.register(Notification, NotificationAdmin)

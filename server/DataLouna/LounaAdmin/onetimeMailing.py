@@ -1,10 +1,9 @@
-
 from telebot import *
 from .conf import TOKEN_BOT
 from telebot.types import (
     InputMediaPhoto,
     InputMediaAudio,
-    InputMediaVideo,
+    InputMediaVideo, InlineKeyboardMarkup,
 )
 from telebot.apihelper import ApiTelegramException
 
@@ -20,20 +19,29 @@ mediaType - тип файлов (1 - картинка, 2 - аудио, 3 - ви�
 """
 
 
-def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[str] = None, mediaType: int = 0):
+def one_timeMailing(
+    text: str,
+    users: list[int],
+    title: str = None,
+    mediaLinks: list[str] = None,
+    mediaType: int = 0,
+):
     bot = TeleBot(TOKEN_BOT)
     print("One time mailing")
     if len(users) == 0:
         return
     if not mediaLinks:
-        if not text and not title:
+        if not text:
             return
-        message = f'*{title}*\n\n{text}'
+        if title:
+            message = f"*{title}*\n\n{text}"
+        else:
+            message = f"{text}"
         for user in users:
             try:
                 bot.send_message(chat_id=user, text=message, parse_mode="Markdown")
             except ApiTelegramException as e:
-                print(f'{user} --- {e}')
+                print(f"{user} --- {e}")
         return
     media = []
     if mediaType == 0:
@@ -42,7 +50,7 @@ def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[st
     if len(mediaLinks) > 10:
         return
 
-    message = f'*{title}*\n\n{text}'
+    message = f"*{title}*\n\n{text}"
     if text == None and title == None:
         message = None
 
@@ -96,5 +104,36 @@ def one_timeMailing(title: str, text: str, users: list[int], mediaLinks: list[st
         try:
             bot.send_media_group(chat_id=user, media=media)
         except ApiTelegramException as e:
-            print(f'{user} --- {e}')
+            print(f"{user} --- {e}")
     return
+
+
+def quiz(text: str, markup: InlineKeyboardMarkup, users: list[int], title: str = None):
+    '''
+    Функция для рассылки опросов
+    :param text: Текст вопроса
+    :param markup: Клавиатура опроса класса InlineKeyboardMarkup. У каждой кнопки клавиатуры первый символ "callback_data" должен быть "q"
+    :param users: Список id пользователей, которым нужно отправить вопрос
+    :return:
+    '''
+    bot = TeleBot(TOKEN_BOT)
+    if title == None:
+        for user in users:
+            try:
+                bot.send_message(chat_id=user,
+                                 text=f"{text}",
+                                 reply_markup=markup,
+                                 parse_mode="Markdown",
+                                 )
+            except ApiTelegramException as e:
+                print(f'{user} --- {e}')
+    else:
+        for user in users:
+            try:
+                bot.send_message(chat_id=user,
+                                 text=f"*{title}*\n\n{text}",
+                                 reply_markup=markup,
+                                 parse_mode="Markdown",
+                                 )
+            except ApiTelegramException as e:
+                print(f'{user} --- {e}')

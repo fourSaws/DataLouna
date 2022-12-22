@@ -8,24 +8,12 @@ class ArticleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class NodeSerializerUnpack(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryNode
-        fields = ("id", "name")
-
-
-class NodeSerializer(serializers.ModelSerializer):
-    articles = ArticleSerializer(read_only=True, many=True)
+class TopSerializer(serializers.ModelSerializer):
+    links = ArticleSerializer(many=True, read_only=True)
 
     class Meta:
-        model = CategoryNode
-        fields = ("id", "name", "parent", "articles", "final")
-
-
-class NodeSerializerArticleId(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryNode
-        fields = ("id", "name", "parent", "final", "valid")
+        model = Article
+        fields = ("id", "title", "text", "photo", "links", "on_top")
 
 
 class UserSerializer(serializers.ModelSerializer):
